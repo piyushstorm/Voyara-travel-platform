@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SPRING_PROFILES_ACTIVE: test
-      MAVEN_OPTS: "-Xmx2048m"
+      MAVEN_OPTS: "-Xmx768m"
     defaults:
       run:
         working-directory: backend

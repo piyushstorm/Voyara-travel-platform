@@ -139,6 +139,17 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Xmx1024m -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
+                    <trimStackTrace>false</trimStackTrace>
+                    <systemPropertyVariables>
+                        <spring.test.context.cache.maxSize>3</spring.test.context.cache.maxSize>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
