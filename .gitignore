@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+target/
+build/
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Environment (IMPORTANT)
+.env
+.env.*
+!.env.example
+
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+coverage/
+htmlcov/
+
+# Frontend
+frontend/dist/
+
+# Backend
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Temporary scratch directory
+scratch/

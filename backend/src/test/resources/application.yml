@@ -1,0 +1,50 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: false
+    open-in-view: false
+
+  flyway:
+    enabled: false
+
+  mail:
+    host: localhost
+    port: 25
+    username: test
+    password: test
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.web.socket.servlet.WebSocketServletAutoConfiguration
+
+seed:
+  data:
+    enabled: false
+
+email:
+  provider: mock
+
+payment:
+  provider: mock
+
+app:
+  jwt:
+    secret: testSecretKeyForUnitTestsOnly1234567890ThisKeyIsAtLeast256BitsLongForHmac!
+    access-token-expiration-ms: 3600000
+    refresh-token-expiration-ms: 604800000
+    issuer: travel-platform
+
+logging:
+  level:
+    root: WARN
+    com.travelplatform: DEBUG

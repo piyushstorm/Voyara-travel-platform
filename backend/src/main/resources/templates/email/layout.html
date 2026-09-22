@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voyara</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(79, 70, 229, 0.08);
+        }
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            padding: 32px 40px;
+            text-align: center;
+        }
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .header .tagline {
+            color: rgba(255, 255, 255, 0.85);
+            margin: 6px 0 0 0;
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+        .content {
+            padding: 40px;
+        }
+        .icon-circle {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px auto;
+            font-size: 32px;
+        }
+        .icon-circle.blue { background-color: #eef2ff; }
+        .icon-circle.green { background-color: #ecfdf5; }
+        .icon-circle.amber { background-color: #fffbeb; }
+        .icon-circle.red { background-color: #fef2f2; }
+        .heading {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 700;
+            color: #111827;
+            margin: 0 0 12px 0;
+        }
+        .subheading {
+            text-align: center;
+            font-size: 15px;
+            color: #6b7280;
+            margin: 0 0 32px 0;
+            line-height: 1.5;
+        }
+        .body-text {
+            font-size: 15px;
+            color: #374151;
+            margin: 0 0 16px 0;
+            line-height: 1.6;
+        }
+        .button-wrapper {
+            text-align: center;
+            margin: 32px 0;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            color: #ffffff !important;
+            padding: 14px 32px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+        }
+        .button:hover {
+            background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+        }
+        .divider {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 32px 0;
+        }
+        .security-notice {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 24px 0;
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+        .security-notice strong {
+            color: #374151;
+        }
+        .footer {
+            background-color: #f9fafb;
+            padding: 24px 40px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer p {
+            margin: 4px 0;
+            font-size: 12px;
+            color: #9ca3af;
+            line-height: 1.5;
+        }
+        .footer .brand {
+            font-weight: 700;
+            color: #4f46e5;
+            font-size: 13px;
+        }
+        .footer a {
+            color: #4f46e5;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✈ Voyara</h1>
+            <p class="tagline">Smart Travel, Simplified</p>
+        </div>
+        <div class="content">
+            {{content}}
+        </div>
+        <div class="footer">
+            <p><span class="brand">Voyara</span> &mdash; Smart Travel, Simplified</p>
+            <p>&copy; 2026 Voyara Travel Platform. All rights reserved.</p>
+            <p style="margin-top: 8px;">If you didn't request this email, you can safely ignore it. No action is required.</p>
+        </div>
+    </div>
+</body>
+</html>

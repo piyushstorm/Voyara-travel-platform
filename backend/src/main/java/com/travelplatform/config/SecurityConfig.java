@@ -1,0 +1,136 @@
+package com.travelplatform.config;
+
+import com.travelplatform.security.JwtAuthenticationFilter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
+public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                // Public endpoints
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/actuator/health").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
+
+                // Swagger only in dev
+                .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
+
+                // Flight status — tracking requires auth; single flight, search and simulation are public
+                .requestMatchers(HttpMethod.GET, "/api/flight-status/tracked").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/flight-status/*/track").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/flight-status/*/untrack").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/flight-status/*/simulate").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/flight-status/search").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/flight-status/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/flight-status/*/history").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/flights/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/hotels/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/rooms/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/recommendations/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/voyara/invitations/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/addons/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/prices/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/seats/map").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/holidays/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/trains/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/buses/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/cabs/**").permitAll()
+
+                // Payment endpoints
+                .requestMatchers("/api/payments/webhook").permitAll()
+                .requestMatchers("/api/payments/create-order").authenticated()
+                .requestMatchers("/api/payments/verify").authenticated()
+
+                // WebSocket
+                .requestMatchers("/ws/**").permitAll()
+
+                // Review moderation — require admin
+                .requestMatchers("/api/reviews/moderation/**").hasRole("ADMIN")
+                .requestMatchers("/api/reviews/*/moderate").hasRole("ADMIN")
+                .requestMatchers("/api/reviews/eligibility").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
+
+                // Admin only
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/rewards/admin/**").hasRole("ADMIN")
+
+                // Rewards public config
+                .requestMatchers("/api/rewards/config").permitAll()
+
+                // Rewards customer endpoints - require authentication
+                .requestMatchers("/api/rewards/**").authenticated()
+
+                // Notifications - require authentication
+                .requestMatchers("/api/notifications/**").authenticated()
+
+                // Voyara differentiator endpoints — require authentication
+                .requestMatchers("/api/voyara/**").authenticated()
+
+                // Everything else requires authentication
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @Value("${cors.allowed-origins:http://localhost:5173,http://localhost:5174,http://localhost:3000}")
+    private String allowedOrigins;
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(allowedOrigins.split(",")));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}

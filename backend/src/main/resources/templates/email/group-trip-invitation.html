@@ -1,0 +1,33 @@
+<div class="icon-circle blue">✈️</div>
+
+<h2 class="heading">You're invited to {{tripName}}</h2>
+<p class="subheading">{{inviterName}} has invited you to join this trip and share the adventure together.</p>
+
+<p class="body-text"><strong>Trip:</strong> {{tripName}}</p>
+<p class="body-text"><strong>Dates:</strong> {{startDate}} to {{endDate}}</p>
+<p class="body-text"><strong>Members:</strong> {{memberCount}} travellers</p>
+
+<p class="body-text"><strong>Plan:</strong> {{tripDescription}}</p>
+
+<div class="button-wrapper">
+    <a href="{{acceptUrl}}" class="button">Accept Invitation</a>
+</div>
+
+<div class="button-wrapper" style="margin-top: 12px;">
+    <a href="{{declineUrl}}" class="button" style="background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);">Decline</a>
+</div>
+
+<hr class="divider">
+
+<p class="body-text" style="text-align: center;">
+    This invitation expires on <strong>{{expiryDate}}</strong>.
+</p>
+
+<div class="security-notice">
+    <strong>Trip organiser:</strong> {{inviterName}} ({{inviterEmail}})
+</div>
+
+<p class="body-text" style="text-align: center; font-size: 13px; color: #9ca3af;">
+    Need to decide later? You can still review the invite in your browser using the secure link below:
+    <span style="word-break: break-all; color: #4f46e5;">{{acceptUrl}}</span>
+</p>

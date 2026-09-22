@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/travel_platform
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+  flyway:
+    enabled: false
+    baseline-on-migrate: true
+    baseline-version: 0
+    clean-disabled: true
+
+  data:
+    redis:
+      host: redis
+      port: 6379
+      password: ${REDIS_PASSWORD:}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:?Set JWT_SECRET}
+    access-token-expiration-ms: 3600000
+    refresh-token-expiration-ms: 604800000
+    issuer: travel-platform
