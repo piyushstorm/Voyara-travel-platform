@@ -62,7 +62,11 @@ class AdminRoleManagementTest {
 
     @Test
     void adminCanPromoteUserToAdmin() throws Exception {
-        mockMvc.perform(put("/api/admin/users/{id}/role", testUser.getId())
+        User promoteTarget = new User("Promote Target", "promote-target-" + System.nanoTime() + "@test.com", passwordEncoder.encode("user123"));
+        promoteTarget.setRole(Role.USER);
+        promoteTarget = userRepository.save(promoteTarget);
+
+        mockMvc.perform(put("/api/admin/users/{id}/role", promoteTarget.getId())
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"role\":\"ADMIN\"}"))

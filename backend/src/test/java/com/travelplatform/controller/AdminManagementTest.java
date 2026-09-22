@@ -48,13 +48,23 @@ class AdminManagementTest {
 
     @BeforeEach
     void setUp() {
-        admin = new User("Admin", "admin-mgmt@test.com", passwordEncoder.encode("admin123"));
+        admin = userRepository.findByEmail("admin-mgmt@test.com").orElseGet(() -> {
+            User u = new User("Admin", "admin-mgmt@test.com", passwordEncoder.encode("admin123"));
+            u.setRole(Role.ADMIN);
+            return userRepository.save(u);
+        });
         admin.setRole(Role.ADMIN);
+        admin.setEnabled(true);
         admin = userRepository.save(admin);
         adminToken = tokenProvider.generateAccessToken(admin.getEmail());
 
-        user = new User("User", "user-mgmt@test.com", passwordEncoder.encode("user123"));
+        user = userRepository.findByEmail("user-mgmt@test.com").orElseGet(() -> {
+            User u = new User("User", "user-mgmt@test.com", passwordEncoder.encode("user123"));
+            u.setRole(Role.USER);
+            return userRepository.save(u);
+        });
         user.setRole(Role.USER);
+        user.setEnabled(true);
         user = userRepository.save(user);
         userToken = tokenProvider.generateAccessToken(user.getEmail());
     }
@@ -98,7 +108,12 @@ class AdminManagementTest {
 
     @Test
     void adminCanToggleUser() throws Exception {
-        mockMvc.perform(put("/api/admin/users/" + user.getId() + "/toggle")
+        User toggleTarget = new User("Toggle Target", "toggle-target-" + System.nanoTime() + "@test.com", passwordEncoder.encode("user123"));
+        toggleTarget.setRole(Role.USER);
+        toggleTarget.setEnabled(true);
+        toggleTarget = userRepository.save(toggleTarget);
+
+        mockMvc.perform(put("/api/admin/users/" + toggleTarget.getId() + "/toggle")
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.enabled").value(false));
@@ -115,7 +130,11 @@ class AdminManagementTest {
 
     @Test
     void adminCanPromoteUser() throws Exception {
-        mockMvc.perform(put("/api/admin/users/" + user.getId() + "/role")
+        User promoteTarget = new User("Promote Target", "promote-target-" + System.nanoTime() + "@test.com", passwordEncoder.encode("user123"));
+        promoteTarget.setRole(Role.USER);
+        promoteTarget = userRepository.save(promoteTarget);
+
+        mockMvc.perform(put("/api/admin/users/" + promoteTarget.getId() + "/role")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"role\":\"ADMIN\"}"))
@@ -126,7 +145,7 @@ class AdminManagementTest {
     @Test
     void adminCanDemoteAdmin() throws Exception {
         // Create second admin
-        User secondAdmin = new User("Second Admin", "secondadmin-mgmt@test.com", passwordEncoder.encode("admin123"));
+        User secondAdmin = new User("Second Admin", "secondadmin-" + System.nanoTime() + "@test.com", passwordEncoder.encode("admin123"));
         secondAdmin.setRole(Role.ADMIN);
         secondAdmin = userRepository.save(secondAdmin);
 
