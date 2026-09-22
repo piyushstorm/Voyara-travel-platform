@@ -60,7 +60,7 @@ public class Seat {
 
     /** Optimistic lock version — concurrent updates will trigger OptimisticLockException */
     @Version
-    private Long version = 0L;
+    private Long version;
 
     private String heldByUserId;
 

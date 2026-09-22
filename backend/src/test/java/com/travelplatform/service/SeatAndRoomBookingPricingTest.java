@@ -103,28 +103,6 @@ public class SeatAndRoomBookingPricingTest {
         premiumSeat.setAvailable(true);
         premiumSeat = seatRepo.save(premiumSeat);
 
-        testHotel = hotelRepo.findAll().stream().findFirst().orElseGet(() -> {
-            Hotel h = new Hotel();
-            h.setName("Pricing Grand Hotel");
-            h.setCity("Mumbai");
-            h.setCountry("India");
-            h.setAddress("Marine Drive");
-            h.setStarRating(5);
-            h.setStartingPrice(new BigDecimal("8000.00"));
-            return hotelRepo.save(h);
-        });
-        testRoom = roomRepo.findByHotelId(testHotel.getId()).stream().findFirst().orElseGet(() -> {
-            Room r = new Room();
-            r.setHotel(testHotel);
-            r.setName("Deluxe King Room");
-            r.setRoomType("DELUXE");
-            r.setPricePerNight(new BigDecimal("9000.00"));
-            r.setAvailableRooms(10);
-            r.setMaxGuests(2);
-            return roomRepo.save(r);
-        });
-        testRoom.setAvailableRooms(10);
-        roomRepo.save(testRoom);
     }
 
     @Test
@@ -168,6 +146,24 @@ public class SeatAndRoomBookingPricingTest {
     @DisplayName("Hotel Booking decrements inventory and confirms room hold")
     @Transactional
     void testHotelBookingConfirmsRoomHold() {
+        Hotel h = new Hotel();
+        h.setName("Pricing Grand Hotel Unique");
+        h.setCity("Mumbai");
+        h.setCountry("India");
+        h.setAddress("Marine Drive");
+        h.setStarRating(5);
+        h.setStartingPrice(new BigDecimal("8000.00"));
+        testHotel = hotelRepo.save(h);
+
+        Room r = new Room();
+        r.setHotel(testHotel);
+        r.setName("Deluxe King Room");
+        r.setRoomType("DELUXE");
+        r.setPricePerNight(new BigDecimal("9000.00"));
+        r.setAvailableRooms(10);
+        r.setMaxGuests(2);
+        testRoom = roomRepo.save(r);
+
         int initialRooms = testRoom.getAvailableRooms();
 
         // Hold room first

@@ -64,7 +64,7 @@ public class Room {
 
     /** Optimistic lock version — concurrent booking updates trigger OptimisticLockException */
     @Version
-    private Long version = 0L;
+    private Long version;
 
     private boolean active = true;
 
