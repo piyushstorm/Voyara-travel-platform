@@ -1,144 +1,109 @@
-# Voyara Travel Platform ✈️🏨
+# ✈️ Voyara — Travel Booking Platform
 
-A production-grade, real-time travel booking platform for flights, hotels, and group journeys.
+A production-oriented full-stack travel booking platform designed to provide a unified experience for discovering, booking, managing, and tracking travel services.
 
-## Tech Stack
+Voyara brings flights, hotels, travel planning, group trips, payments, rewards, reviews, recommendations, and travel assistance into a single platform.
 
-| Layer | Technology |
-|-------|-----------|
-| **Backend** | Java 21, Spring Boot 3.4, Spring Data JPA, Spring Security (JWT), Spring WebSocket (STOMP), PostgreSQL, Redis |
-| **Frontend** | React 18, Vite, TailwindCSS, React Router, React Query (TanStack), Axios, Recharts, STOMP.js |
-| **Infra** | Docker + Docker Compose, GitHub Actions CI |
-| **Testing** | JUnit 5 + Mockito |
-| **Docs** | springdoc-openapi (Swagger UI) |
+---
 
-## Features
+## 🌍 Overview
 
-### Core Platform
-- User registration/login (JWT, role-based USER/ADMIN), password reset
-- Flight search & results (filters: price, airline, stops, time; sort options)
-- Hotel search & results (filters: price, star rating, amenities; sort options)
-- Booking flow with mock payment gateway
-- User dashboard (upcoming/past bookings, refund tracker, loyalty points)
+Voyara is built as a modern full-stack travel platform with a React frontend and Spring Boot backend.
 
-### Deep-Dive Features
-1. **Live Flight Status** — Real-time WebSocket push of flight status transitions
-2. **Dynamic Pricing Engine** — Rules-based pricing with live updates and price freeze
-3. **Cancellation & Refund System** — Time-based refund calculation with status tracking
-4. **Interactive Seat & Room Selection** — SVG seat map with holds, room type grid
-5. **Review & Rating System** — Stars, photos, replies, moderation, helpful votes
-6. **Personalized Recommendations** — Hybrid content-based + collaborative filtering
+The platform supports:
 
-### Differentiators
-- Group booking with split payment
-- Loyalty points/tier system
-- Admin analytics dashboard (Recharts)
+- Flight discovery and booking
+- Hotel discovery and booking
+- Travel booking management
+- Secure authentication and authorization
+- Real-time flight tracking
+- Dynamic pricing
+- Interactive seat and room selection
+- Cancellation and refund management
+- Group trips and travel companions
+- Reviews and ratings
+- Personalized recommendations
+- Loyalty and rewards
+- Notifications
+- Admin management and analytics
+- Secure online payments through Razorpay
 
-## Architecture
+The application is designed with a backend-authoritative architecture so that critical operations such as pricing, inventory, booking, payment verification, authorization, and refunds are validated server-side.
 
-```
-┌─────────────────┐     ┌──────────────────┐     ┌──────────────┐
-│   React (Vite)  │────▶│  Spring Boot API │────▶│  PostgreSQL  │
-│   Port 5173     │     │  Port 8080       │     │  Port 5432   │
-└─────────────────┘     └──────────────────┘     └──────────────┘
-                               │
-                        ┌──────┴──────┐
-                        │    Redis    │
-                        │  Port 6379  │
-                        └─────────────┘
-```
+---
 
-### Backend Layered Architecture
-```
-Controller → Service → Repository → Database
-    ↓           ↓
-  DTOs      Entities
-```
+# 🚀 Key Features
 
-## Getting Started
+## 🔐 Authentication & Authorization
 
-### Prerequisites
-- Java 21+
-- Node.js 18+
-- Docker & Docker Compose
+- Email/password registration and login
+- JWT-based authentication
+- Access and refresh token support
+- Role-based authorization
+- USER and ADMIN roles
+- Password reset
+- Email verification
+- Google authentication
+- Mobile OTP authentication
+- Protected frontend routes
+- Backend authorization enforcement
+- Rate limiting for authentication endpoints
 
-### Quick Start (Docker)
+---
 
-```bash
-# Start databases
-docker compose up -d postgres redis
+## ✈️ Flight Search & Booking
 
-# Start backend (from backend/)
-cd backend
-./mvnw spring-boot:run
+- Search flights by origin and destination
+- Future-date validation
+- Airline filtering
+- Price filtering
+- Stop filtering
+- Departure/arrival time filtering
+- Sorting
+- Flight details
+- Fare breakdown
+- Seat selection
+- Premium seat pricing
+- Booking creation
+- Booking management
 
-# Start frontend (from frontend/)
-cd frontend
-npm install
-npm run dev
-```
+---
 
-### Full Docker Compose
-```bash
-# Build and start everything
-docker compose up --build
-```
+## 🏨 Hotel Search & Booking
 
-### Environment Variables
+- Hotel discovery
+- Destination-based search
+- Price filtering
+- Star-rating filtering
+- Amenity filtering
+- Sorting
+- Room-type selection
+- Room availability
+- Room pricing
+- Booking management
+- Hotel reviews and ratings
 
-Copy `.env.example` to `.env` and configure:
-```bash
-cp .env.example .env
-```
+---
 
-### API Documentation
+## 💺 Interactive Seat Selection
 
-Once the backend is running, visit:
-- Swagger UI: http://localhost:8080/swagger-ui.html
-- API Docs: http://localhost:8080/api-docs
+Voyara provides an interactive seat-selection experience for supported flights.
 
-## Development
+Features include:
 
-```bash
-# Backend
-cd backend
-./mvnw clean test          # Run tests
-./mvnw spring-boot:run     # Start dev server
+- Visual seat map
+- Available/unavailable states
+- Seat holds
+- Concurrent booking protection
+- Premium seat pricing
+- Backend-authoritative seat availability
+- Automatic fare recalculation
+- Selected-seat persistence during booking
 
-# Frontend
-cd frontend
-npm run dev                # Start Vite dev server
-npm run build              # Production build
-npm run lint               # Lint code
-```
+Example:
 
-## Project Structure
-
-```
-├── backend/                 # Spring Boot backend
-│   ├── src/main/java/com/travelplatform/
-│   │   ├── config/          # Security, Redis, OpenAPI config
-│   │   ├── controller/      # REST controllers
-│   │   ├── dto/             # Data transfer objects
-│   │   ├── entity/          # JPA entities
-│   │   ├── exception/       # Global exception handling
-│   │   ├── repository/      # Spring Data repositories
-│   │   ├── security/        # JWT, filters
-│   │   └── service/         # Business logic
-│   └── src/test/            # Unit tests
-├── frontend/                # React + Vite frontend
-│   ├── src/
-│   │   ├── api/             # Axios config
-│   │   ├── components/      # Reusable UI components
-│   │   ├── context/         # React Context (auth)
-│   │   ├── hooks/           # Custom hooks
-│   │   └── pages/           # Route pages
-│   └── public/
-├── .github/workflows/       # CI/CD
-├── docker-compose.yml       # Local dev services
-└── README.md
-```
-
-## License
-
-This project is for educational purposes.
+```text
+Base Fare          ₹6,433
+Premium Seat 12A   ₹750
+-------------------------
+Total              ₹7,183
