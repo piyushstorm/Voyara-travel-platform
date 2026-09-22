@@ -58,51 +58,37 @@ public class RoomSelectionServiceTest {
         testUser2 = userRepo.findByEmail("room_test2@voyara.com").orElseGet(() ->
                 userRepo.save(new User("Room Test 2", "room_test2@voyara.com", "Password123!")));
 
-        testHotel = hotelRepo.findAll().stream().findFirst().orElseGet(() -> {
-            Hotel h = new Hotel();
-            h.setName("Test Grand Hotel");
-            h.setCity("Mumbai");
-            h.setAddress("Marine Drive");
-            h.setDescription("Luxury hotel");
-            h.setStarRating(5);
-            h.setStartingPrice(BigDecimal.valueOf(5000));
-            h.setImageUrl("https://example.com/hotel.jpg");
-            return hotelRepo.save(h);
-        });
+        testHotel = new Hotel();
+        testHotel.setName("Room Selection Test Hotel " + System.nanoTime());
+        testHotel.setCity("Mumbai");
+        testHotel.setAddress("Marine Drive");
+        testHotel.setDescription("Luxury hotel");
+        testHotel.setStarRating(5);
+        testHotel.setStartingPrice(BigDecimal.valueOf(5000));
+        testHotel.setImageUrl("https://example.com/hotel.jpg");
+        testHotel = hotelRepo.save(testHotel);
 
-        List<Room> rooms = roomRepo.findByHotelId(testHotel.getId());
-        if (rooms.isEmpty()) {
-            stdRoom = new Room();
-            stdRoom.setHotel(testHotel);
-            stdRoom.setRoomType("STANDARD");
-            stdRoom.setName("Standard King");
-            stdRoom.setPricePerNight(BigDecimal.valueOf(5000));
-            stdRoom.setTotalRooms(5);
-            stdRoom.setAvailableRooms(5);
-            stdRoom.setBedType("KING");
-            stdRoom.setAmenities("Free Wi-Fi,Air Conditioning,TV");
-            stdRoom = roomRepo.save(stdRoom);
+        stdRoom = new Room();
+        stdRoom.setHotel(testHotel);
+        stdRoom.setRoomType("STANDARD");
+        stdRoom.setName("Standard King");
+        stdRoom.setPricePerNight(BigDecimal.valueOf(5000));
+        stdRoom.setTotalRooms(5);
+        stdRoom.setAvailableRooms(5);
+        stdRoom.setBedType("KING");
+        stdRoom.setAmenities("Free Wi-Fi,Air Conditioning,TV");
+        stdRoom = roomRepo.save(stdRoom);
 
-            delRoom = new Room();
-            delRoom.setHotel(testHotel);
-            delRoom.setRoomType("DELUXE");
-            delRoom.setName("Deluxe King");
-            delRoom.setPricePerNight(BigDecimal.valueOf(6500));
-            delRoom.setTotalRooms(3);
-            delRoom.setAvailableRooms(3);
-            delRoom.setBedType("KING");
-            delRoom.setAmenities("Free Wi-Fi,Air Conditioning,City View,Free Breakfast");
-            delRoom = roomRepo.save(delRoom);
-        } else {
-            stdRoom = rooms.get(0);
-            stdRoom.setAvailableRooms(5);
-            roomRepo.save(stdRoom);
-            if (rooms.size() > 1) {
-                delRoom = rooms.get(1);
-                delRoom.setAvailableRooms(3);
-                roomRepo.save(delRoom);
-            }
-        }
+        delRoom = new Room();
+        delRoom.setHotel(testHotel);
+        delRoom.setRoomType("DELUXE");
+        delRoom.setName("Deluxe King");
+        delRoom.setPricePerNight(BigDecimal.valueOf(6500));
+        delRoom.setTotalRooms(3);
+        delRoom.setAvailableRooms(3);
+        delRoom.setBedType("KING");
+        delRoom.setAmenities("Free Wi-Fi,Air Conditioning,City View,Free Breakfast");
+        delRoom = roomRepo.save(delRoom);
     }
 
     @Test

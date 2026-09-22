@@ -67,53 +67,42 @@ public class SeatConcurrencyTest {
             testUsers.add(u);
         }
 
-        // Find or create a test seat
-        List<Seat> seats = seatRepo.findAll();
-        if (!seats.isEmpty()) {
-            singleSeat = seats.get(0);
-        } else {
-            Flight flight = flightRepo.findAll().stream().findFirst().orElseGet(() -> {
-                com.travelplatform.entity.Airport origin = airportRepo.findByCode("DEL").orElseGet(() ->
-                        airportRepo.save(new com.travelplatform.entity.Airport("DEL", "Indira Gandhi International", "Delhi", "India", 28.5562, 77.1000)));
-                com.travelplatform.entity.Airport dest = airportRepo.findByCode("BOM").orElseGet(() ->
-                        airportRepo.save(new com.travelplatform.entity.Airport("BOM", "Chhatrapati Shivaji International", "Mumbai", "India", 19.0896, 72.8656)));
-                com.travelplatform.entity.Airline airline = airlineRepo.findByCode("AI").orElseGet(() ->
-                        airlineRepo.save(new com.travelplatform.entity.Airline("AI", "Air India", "https://example.com/ai.png", 4.5)));
+        com.travelplatform.entity.Airport origin = airportRepo.findByCode("DEL").orElseGet(() ->
+                airportRepo.save(new com.travelplatform.entity.Airport("DEL", "Indira Gandhi International", "Delhi", "India", 28.5562, 77.1000)));
+        com.travelplatform.entity.Airport dest = airportRepo.findByCode("BOM").orElseGet(() ->
+                airportRepo.save(new com.travelplatform.entity.Airport("BOM", "Chhatrapati Shivaji International", "Mumbai", "India", 19.0896, 72.8656)));
+        com.travelplatform.entity.Airline airline = airlineRepo.findByCode("AI").orElseGet(() ->
+                airlineRepo.save(new com.travelplatform.entity.Airline("AI", "Air India", "https://example.com/ai.png", 4.5)));
 
-                Flight f = new Flight();
-                f.setFlightNumber("AI-CONC-99");
-                f.setAirline(airline);
-                f.setOrigin(origin);
-                f.setDestination(dest);
-                f.setOriginCode("DEL");
-                f.setDestinationCode("BOM");
-                f.setDepartureTime(LocalDateTime.now().plusDays(5));
-                f.setArrivalTime(LocalDateTime.now().plusDays(5).plusHours(2));
-                f.setDepartureDate(LocalDateTime.now().plusDays(5).toLocalDate());
-                f.setEconomyPrice(new BigDecimal("5000.00"));
-                f.setPremiumEconomyPrice(new BigDecimal("7500.00"));
-                f.setBusinessPrice(new BigDecimal("12000.00"));
-                f.setFirstClassPrice(new BigDecimal("20000.00"));
-                f.setTotalSeatsEconomy(100);
-                f.setDurationMinutes(120);
-                return flightRepo.save(f);
-            });
-            singleSeat = new Seat();
-            singleSeat.setFlight(flight);
-            singleSeat.setSeatNumber("12A");
-            singleSeat.setCabinClass("ECONOMY");
-            singleSeat.setRowNumber(12);
-            singleSeat.setColumnLetter("A");
-            singleSeat.setWindow(true);
-            singleSeat.setPrice(BigDecimal.valueOf(500));
-            singleSeat.setPremiumSurcharge(BigDecimal.valueOf(500));
-            singleSeat = seatRepo.save(singleSeat);
-        }
+        Flight flight = new Flight();
+        flight.setFlightNumber("AI-CONC-" + System.nanoTime());
+        flight.setAirline(airline);
+        flight.setOrigin(origin);
+        flight.setDestination(dest);
+        flight.setOriginCode("DEL");
+        flight.setDestinationCode("BOM");
+        flight.setDepartureTime(LocalDateTime.now().plusDays(5));
+        flight.setArrivalTime(LocalDateTime.now().plusDays(5).plusHours(2));
+        flight.setDepartureDate(LocalDateTime.now().plusDays(5).toLocalDate());
+        flight.setEconomyPrice(new BigDecimal("5000.00"));
+        flight.setPremiumEconomyPrice(new BigDecimal("7500.00"));
+        flight.setBusinessPrice(new BigDecimal("12000.00"));
+        flight.setFirstClassPrice(new BigDecimal("20000.00"));
+        flight.setTotalSeatsEconomy(100);
+        flight.setDurationMinutes(120);
+        flight = flightRepo.save(flight);
 
+        singleSeat = new Seat();
+        singleSeat.setFlight(flight);
+        singleSeat.setSeatNumber("12A");
+        singleSeat.setCabinClass("ECONOMY");
+        singleSeat.setRowNumber(12);
+        singleSeat.setColumnLetter("A");
+        singleSeat.setWindow(true);
+        singleSeat.setPrice(BigDecimal.valueOf(500));
+        singleSeat.setPremiumSurcharge(BigDecimal.valueOf(500));
         singleSeat.setAvailable(true);
-        singleSeat.setHeldByUserId(null);
-        singleSeat.setHeldUntil(null);
-        seatRepo.save(singleSeat);
+        singleSeat = seatRepo.save(singleSeat);
     }
 
     @Test
