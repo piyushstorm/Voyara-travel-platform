@@ -371,7 +371,18 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Page<Payment> payments = paymentRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
-        return ResponseEntity.ok(Map.of("success", true, "data", payments));
+        var mapped = payments.map(p -> {
+            Map<String, Object> m = new HashMap<>();
+            m.put("id", p.getId());
+            m.put("paymentId", p.getPaymentId());
+            m.put("amount", p.getAmount());
+            m.put("currency", p.getCurrency());
+            m.put("status", p.getStatus());
+            m.put("paymentMethod", p.getPaymentMethod());
+            m.put("createdAt", p.getCreatedAt());
+            return m;
+        });
+        return ResponseEntity.ok(Map.of("success", true, "data", mapped));
     }
 
     // ==================== REFUNDS ====================
@@ -381,7 +392,20 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Page<Refund> refunds = refundRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
-        return ResponseEntity.ok(Map.of("success", true, "data", refunds));
+        var mapped = refunds.map(r -> {
+            Map<String, Object> m = new HashMap<>();
+            m.put("id", r.getId());
+            m.put("refundId", r.getRefundId());
+            m.put("refundAmount", r.getRefundAmount());
+            m.put("originalAmount", r.getOriginalAmount());
+            m.put("refundPercentage", r.getRefundPercentage());
+            m.put("currency", r.getCurrency());
+            m.put("status", r.getStatus());
+            m.put("cancellationReason", r.getCancellationReason());
+            m.put("createdAt", r.getCreatedAt());
+            return m;
+        });
+        return ResponseEntity.ok(Map.of("success", true, "data", mapped));
     }
 
     // ==================== REVIEWS ====================
@@ -391,7 +415,20 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Page<Review> reviews = reviewRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
-        return ResponseEntity.ok(Map.of("success", true, "data", reviews));
+        var mapped = reviews.map(rv -> {
+            Map<String, Object> m = new HashMap<>();
+            m.put("id", rv.getId());
+            m.put("title", rv.getTitle());
+            m.put("rating", rv.getRating());
+            m.put("text", rv.getText());
+            m.put("status", rv.getStatus());
+            m.put("helpfulCount", rv.getHelpfulCount());
+            m.put("reportCount", rv.getReportCount());
+            m.put("verifiedBooking", rv.isVerifiedBooking());
+            m.put("createdAt", rv.getCreatedAt());
+            return m;
+        });
+        return ResponseEntity.ok(Map.of("success", true, "data", mapped));
     }
 
     @GetMapping("/reviews/moderation-queue")
