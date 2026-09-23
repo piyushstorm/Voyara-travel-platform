@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getFlightById, getFareOptions, getAddOns, getPricingFactors, BAGGAGE_INFO, CANCELLATION_POLICIES, FARE_RULES } from '../api/flightApi';
@@ -96,8 +96,35 @@ export default function FlightDetail() {
   const taxes = Math.round(farePrice * 0.12);
   const totalPerPerson = farePrice + addOnsCost + taxes;
   const totalFare = (totalPerPerson * passengers) + seatCost;
-
   const baggage = BAGGAGE_INFO[selectedClass] || BAGGAGE_INFO.ECONOMY;
+
+  const handleSeatSelected = useCallback((seats) => {
+    setSelectedSeats(seats);
+    if (seats && seats.length > 0) {
+      setSeatSelectionError(null);
+    }
+  }, []);
+
+  const handleProceed = useCallback(() => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: { pathname: `/flights/${id}` } } });
+      return;
+    }
+    if (!selectedSeats || selectedSeats.length === 0) {
+      setSeatSelectionError('Please select at least 1 seat before continuing.');
+      setActiveTab('seats');
+      return;
+    }
+    setSeatSelectionError(null);
+    const params = new URLSearchParams({
+      type: 'FLIGHT', id, cabinClass: selectedClass, passengers: String(passengers),
+    });
+    if (selectedSeats.length > 0) params.set('seatIds', selectedSeats.map(s => s.id).join(','));
+    if (selectedSeats.length > 0) params.set('seatNumbers', selectedSeats.map(s => s.seatNumber).join(','));
+    if (selectedFareOption) params.set('fareOptionId', selectedFareOption.id);
+    if (selectedAddOns.length > 0) params.set('addOnIds', selectedAddOns.map(a => a.id).join(','));
+    navigate(`/booking?${params.toString()}`);
+  }, [isAuthenticated, navigate, id, selectedSeats, selectedClass, passengers, selectedFareOption, selectedAddOns]);
 
   const toggleAddOn = (addOn) => {
     setSelectedAddOns(prev => {
@@ -127,27 +154,6 @@ export default function FlightDetail() {
       </div>
     );
   }
-
-  const handleProceed = () => {
-    if (!isAuthenticated) {
-      navigate('/login', { state: { from: { pathname: `/flights/${id}` } } });
-      return;
-    }
-    if (!selectedSeats || selectedSeats.length === 0) {
-      setSeatSelectionError('Please select at least 1 seat before continuing.');
-      setActiveTab('seats');
-      return;
-    }
-    setSeatSelectionError(null);
-    const params = new URLSearchParams({
-      type: 'FLIGHT', id, cabinClass: selectedClass, passengers: String(passengers),
-    });
-    if (selectedSeats.length > 0) params.set('seatIds', selectedSeats.map(s => s.id).join(','));
-    if (selectedSeats.length > 0) params.set('seatNumbers', selectedSeats.map(s => s.seatNumber).join(','));
-    if (selectedFareOption) params.set('fareOptionId', selectedFareOption.id);
-    if (selectedAddOns.length > 0) params.set('addOnIds', selectedAddOns.map(a => a.id).join(','));
-    navigate(`/booking?${params.toString()}`);
-  };
 
   const addOnCategories = [...new Set(addOns.map(a => a.category))];
 
@@ -358,12 +364,7 @@ export default function FlightDetail() {
           <SeatMap
             flightId={flight.id}
             cabinClass={selectedClass}
-            onSeatSelected={(seats) => {
-              setSelectedSeats(seats);
-              if (seats && seats.length > 0) {
-                setSeatSelectionError(null);
-              }
-            }}
+            onSeatSelected={handleSeatSelected}
             maxSeats={passengers}
             baseFare={farePrice}
             onContinue={handleProceed}

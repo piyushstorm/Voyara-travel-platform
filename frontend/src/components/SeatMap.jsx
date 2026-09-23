@@ -32,11 +32,23 @@ export default function SeatMap({
   const navigate = useNavigate();
   const { subscribe } = useWebSocket();
 
-  // Ref to always access the latest selectedSeats inside callbacks and intervals without stale closures
+  // Refs to always access latest props & state inside callbacks and intervals without stale closures or dependency loops
   const selectedSeatsRef = useRef(selectedSeats);
   useEffect(() => {
     selectedSeatsRef.current = selectedSeats;
   }, [selectedSeats]);
+
+  const onSeatSelectedRef = useRef(onSeatSelected);
+  useEffect(() => {
+    onSeatSelectedRef.current = onSeatSelected;
+  }, [onSeatSelected]);
+
+  const onContinueRef = useRef(onContinue);
+  useEffect(() => {
+    onContinueRef.current = onContinue;
+  }, [onContinue]);
+
+  const holdingSeatIdRef = useRef(null);
 
   // Load seat map from backend API with authoritative hold reconciliation
   const fetchSeatMap = useCallback(
@@ -113,11 +125,17 @@ export default function SeatMap({
           setInfoMessage('Hold on seat has expired. Seat availability has been refreshed.');
         }
 
-        // Authoritatively update selectedSeats state without blindly clearing
-        selectedSeatsRef.current = stillValidSelected;
-        setSelectedSeats(stillValidSelected);
-        if (onSeatSelected) {
-          onSeatSelected(stillValidSelected);
+        // Only update selectedSeats if the list actually changed to prevent render loops
+        const isDifferent =
+          stillValidSelected.length !== currentSelected.length ||
+          stillValidSelected.some((s, i) => String(s.id) !== String(currentSelected[i]?.id));
+
+        if (isDifferent) {
+          selectedSeatsRef.current = stillValidSelected;
+          setSelectedSeats(stillValidSelected);
+          if (onSeatSelectedRef.current) {
+            onSeatSelectedRef.current(stillValidSelected);
+          }
         }
 
         // Ensure all seats currently held by current user are marked as SELECTED in seatMap
@@ -144,7 +162,7 @@ export default function SeatMap({
         if (!isSilent) setLoading(false);
       }
     },
-    [flightId, cabinClass, onSeatSelected]
+    [flightId, cabinClass]
   );
 
   useEffect(() => {
@@ -169,9 +187,9 @@ export default function SeatMap({
     const unsubscribe = subscribe(topic, (update) => {
       if (!update || !update.seatId) return;
 
-      const isMine = selectedSeatsRef.current.some(
-        (s) => String(s.id) === String(update.seatId)
-      );
+      const isMine =
+        selectedSeatsRef.current.some((s) => String(s.id) === String(update.seatId)) ||
+        String(holdingSeatIdRef.current) === String(update.seatId);
 
       let effectiveStatus = update.status;
       if (update.status === 'HELD') {
@@ -184,7 +202,7 @@ export default function SeatMap({
         );
         selectedSeatsRef.current = retained;
         setSelectedSeats(retained);
-        if (onSeatSelected) onSeatSelected(retained);
+        if (onSeatSelectedRef.current) onSeatSelectedRef.current(retained);
         setHoldTimeLeft((prev) => {
           const next = { ...prev };
           delete next[update.seatId];
@@ -221,7 +239,7 @@ export default function SeatMap({
     return () => {
       if (typeof unsubscribe === 'function') unsubscribe();
     };
-  }, [flightId, subscribe, onSeatSelected]);
+  }, [flightId, subscribe]);
 
   // Hold countdown timer with automatic expiry handling
   useEffect(() => {
@@ -245,7 +263,7 @@ export default function SeatMap({
           const retained = selectedSeatsRef.current.filter((s) => !expiredSeatIds.includes(String(s.id)));
           selectedSeatsRef.current = retained;
           setSelectedSeats(retained);
-          if (onSeatSelected) onSeatSelected(retained);
+          if (onSeatSelectedRef.current) onSeatSelectedRef.current(retained);
           setInfoMessage('Hold on seat has expired. Seat availability has been refreshed.');
           fetchSeatMap(true);
         }
@@ -254,7 +272,7 @@ export default function SeatMap({
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [fetchSeatMap, onSeatSelected]);
+  }, [fetchSeatMap]);
 
   // Normalize seat array to guarantee row, column, seatNumber, and pricing properties
   const normalizedSeats = useMemo(() => {
@@ -345,6 +363,7 @@ export default function SeatMap({
   const handleDeselectSeat = useCallback(
     async (seatId) => {
       setHoldingSeatId(seatId);
+      holdingSeatIdRef.current = seatId;
       try {
         await releaseSeatHold(seatId);
         const updated = selectedSeatsRef.current.filter((s) => String(s.id) !== String(seatId));
@@ -363,14 +382,15 @@ export default function SeatMap({
           };
         });
         setError(null);
-        if (onSeatSelected) onSeatSelected(updated);
+        if (onSeatSelectedRef.current) onSeatSelectedRef.current(updated);
       } catch (e) {
         setError('Failed to release seat hold. Please try again.');
       } finally {
         setHoldingSeatId(null);
+        holdingSeatIdRef.current = null;
       }
     },
-    [onSeatSelected]
+    []
   );
 
   // Click handler on seat button
@@ -405,6 +425,7 @@ export default function SeatMap({
 
       // Hold seat on backend
       setHoldingSeatId(seat.id);
+      holdingSeatIdRef.current = seat.id;
       try {
         const hold = await holdSeat(seat.id);
         const holdExpiresAt = hold?.expiresAt || hold?.heldUntil || new Date(Date.now() + 10 * 60 * 1000).toISOString();
@@ -429,7 +450,7 @@ export default function SeatMap({
         });
         setError(null);
         setInfoMessage(null);
-        if (onSeatSelected) onSeatSelected(updated);
+        if (onSeatSelectedRef.current) onSeatSelectedRef.current(updated);
       } catch (e) {
         const status = e.response?.status;
         if (status === 401 || status === 403) {
@@ -452,24 +473,25 @@ export default function SeatMap({
         }
       } finally {
         setHoldingSeatId(null);
+        holdingSeatIdRef.current = null;
       }
     },
-    [isAuthenticated, navigate, onSeatSelected, flightId, maxSeats, handleDeselectSeat, fetchSeatMap]
+    [isAuthenticated, navigate, flightId, maxSeats, handleDeselectSeat, fetchSeatMap]
   );
 
   // Defensive handler for confirming seat selection
   const handleConfirmSelection = useCallback(() => {
-    if (!selectedSeats || selectedSeats.length === 0) {
+    if (!selectedSeatsRef.current || selectedSeatsRef.current.length === 0) {
       setError('Please select at least 1 seat before continuing.');
       return;
     }
     setError(null);
-    if (onContinue) {
-      onContinue();
-    } else if (onSeatSelected) {
-      onSeatSelected(selectedSeats);
+    if (onContinueRef.current) {
+      onContinueRef.current();
+    } else if (onSeatSelectedRef.current) {
+      onSeatSelectedRef.current(selectedSeatsRef.current);
     }
-  }, [selectedSeats, onContinue, onSeatSelected]);
+  }, []);
 
   // Summary calculations
   const totalSeatSurcharges = useMemo(() => {
