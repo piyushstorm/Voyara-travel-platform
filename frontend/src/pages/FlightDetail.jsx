@@ -48,6 +48,7 @@ export default function FlightDetail() {
   const [selectedClass, setSelectedClass] = useState(initialClass);
   const [passengers, setPassengers] = useState(initialPassengers);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [seatSelectionError, setSeatSelectionError] = useState(null);
   const [showSeatMap, setShowSeatMap] = useState(false);
   const [activeTab, setActiveTab] = useState('fare');
   const [selectedFareOption, setSelectedFareOption] = useState(null);
@@ -132,6 +133,12 @@ export default function FlightDetail() {
       navigate('/login', { state: { from: { pathname: `/flights/${id}` } } });
       return;
     }
+    if (!selectedSeats || selectedSeats.length === 0) {
+      setSeatSelectionError('Please select at least 1 seat before continuing.');
+      setActiveTab('seats');
+      return;
+    }
+    setSeatSelectionError(null);
     const params = new URLSearchParams({
       type: 'FLIGHT', id, cabinClass: selectedClass, passengers: String(passengers),
     });
@@ -351,7 +358,12 @@ export default function FlightDetail() {
           <SeatMap
             flightId={flight.id}
             cabinClass={selectedClass}
-            onSeatSelected={setSelectedSeats}
+            onSeatSelected={(seats) => {
+              setSelectedSeats(seats);
+              if (seats && seats.length > 0) {
+                setSeatSelectionError(null);
+              }
+            }}
             maxSeats={passengers}
             baseFare={farePrice}
             onContinue={handleProceed}
@@ -601,6 +613,23 @@ export default function FlightDetail() {
       {/* Sticky Booking Bar (mobile) */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-40 lg:relative lg:border-0 lg:bg-transparent lg:p-0 lg:mt-5">
         <div className="max-w-5xl mx-auto">
+          {/* Seat selection error inline alert */}
+          {seatSelectionError && (
+            <div className="mb-3 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center justify-between font-medium animate-fade-in shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="text-red-500 font-bold">⚠️</span>
+                <span>{seatSelectionError}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSeatSelectionError(null)}
+                className="text-red-500 hover:text-red-800 font-bold text-sm px-1 cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+          )}
+
           {/* Price Breakdown (expandable on mobile) */}
           <div className="mb-3 bg-gray-50 rounded-xl p-3 text-sm space-y-1">
             <div className="flex justify-between"><span className="text-gray-500">Base fare × {passengers}</span><span>₹{(farePrice * passengers).toLocaleString()}</span></div>
@@ -618,8 +647,16 @@ export default function FlightDetail() {
               <span className="w-6 text-center font-bold text-sm">{passengers}</span>
               <button onClick={() => setPassengers(Math.min(9, passengers + 1))} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:bg-white transition-colors font-bold">+</button>
             </div>
-            <button onClick={handleProceed}
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-lg shadow-orange-500/20 flex-1 sm:flex-none">
+            <button
+              onClick={handleProceed}
+              disabled={isAuthenticated && selectedSeats.length === 0}
+              aria-disabled={isAuthenticated && selectedSeats.length === 0}
+              className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex-1 sm:flex-none ${
+                isAuthenticated && selectedSeats.length === 0
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-300 shadow-none'
+                  : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg shadow-orange-500/20 cursor-pointer'
+              }`}
+            >
               {isAuthenticated ? 'Continue to Booking →' : 'Login to Book'}
             </button>
           </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getSeatMap, holdSeat, releaseSeatHold } from '../api/selectionApi';
@@ -32,14 +32,108 @@ export default function SeatMap({
   const navigate = useNavigate();
   const { subscribe } = useWebSocket();
 
-  // Load seat map from backend API (supports silent refresh to prevent UI flickering)
+  // Ref to always access the latest selectedSeats inside callbacks and intervals without stale closures
+  const selectedSeatsRef = useRef(selectedSeats);
+  useEffect(() => {
+    selectedSeatsRef.current = selectedSeats;
+  }, [selectedSeats]);
+
+  // Load seat map from backend API with authoritative hold reconciliation
   const fetchSeatMap = useCallback(
     async (isSilent = false) => {
       if (!flightId) return;
       if (!isSilent) setLoading(true);
       try {
         const data = await getSeatMap(flightId, cabinClass);
-        setSeatMap(data);
+        if (!data || !data.seats) {
+          if (!isSilent) setLoading(false);
+          return;
+        }
+
+        const myActiveIds = (data.myActiveHoldSeatIds || []).map(String);
+        const currentSelected = selectedSeatsRef.current || [];
+
+        // Check if any previously selected seats are no longer active on the backend
+        let seatsExpiredOrLost = false;
+        const stillValidSelected = [];
+
+        for (const seat of currentSelected) {
+          const backendSeat = data.seats.find((s) => String(s.id) === String(seat.id));
+          const isStillHeldByMe = myActiveIds.includes(String(seat.id)) || (backendSeat && backendSeat.status === 'SELECTED');
+
+          if (isStillHeldByMe) {
+            stillValidSelected.push({
+              ...seat,
+              status: 'SELECTED',
+              ...(backendSeat ? {
+                premiumSurcharge: backendSeat.premiumSurcharge != null ? Number(backendSeat.premiumSurcharge) : Number(seat.premiumSurcharge || 0),
+                price: backendSeat.price != null ? Number(backendSeat.price) : Number(seat.price || 0),
+                seatType: backendSeat.seatType || seat.seatType,
+              } : {}),
+            });
+          } else {
+            seatsExpiredOrLost = true;
+          }
+        }
+
+        // Check if backend has active holds for this user that aren't yet in local state (e.g. fresh page load)
+        for (const backendSeat of data.seats) {
+          if (myActiveIds.includes(String(backendSeat.id)) || backendSeat.status === 'SELECTED') {
+            const alreadyIn = stillValidSelected.some((s) => String(s.id) === String(backendSeat.id));
+            if (!alreadyIn) {
+              const rawRow = backendSeat.row ?? backendSeat.rowNumber;
+              const row = rawRow != null ? Number(rawRow) : backendSeat.seatNumber ? parseInt(backendSeat.seatNumber, 10) : null;
+              const rawCol = backendSeat.column ?? backendSeat.columnLetter;
+              const col = rawCol != null ? String(rawCol).toUpperCase() : backendSeat.seatNumber ? backendSeat.seatNumber.replace(/^[0-9]+/, '').toUpperCase() : '';
+              const seatNumber = backendSeat.seatNumber || (row && col ? `${row}${col}` : `S-${backendSeat.id}`);
+
+              stillValidSelected.push({
+                ...backendSeat,
+                row,
+                column: col,
+                seatNumber,
+                status: 'SELECTED',
+                price: Number(backendSeat.price || 0),
+                premiumSurcharge: Number(backendSeat.premiumSurcharge || 0),
+                totalPrice: Number(backendSeat.totalPrice || Number(backendSeat.price || 0) + Number(backendSeat.premiumSurcharge || 0)),
+                expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+              });
+            }
+          }
+        }
+
+        if (seatsExpiredOrLost) {
+          setHoldTimeLeft((prev) => {
+            const next = {};
+            for (const s of stillValidSelected) {
+              if (prev[s.id]) next[s.id] = prev[s.id];
+            }
+            return next;
+          });
+          setInfoMessage('Hold on seat has expired. Seat availability has been refreshed.');
+        }
+
+        // Authoritatively update selectedSeats state without blindly clearing
+        selectedSeatsRef.current = stillValidSelected;
+        setSelectedSeats(stillValidSelected);
+        if (onSeatSelected) {
+          onSeatSelected(stillValidSelected);
+        }
+
+        // Ensure all seats currently held by current user are marked as SELECTED in seatMap
+        const normalizedBackendSeats = data.seats.map((s) => {
+          const isMine = stillValidSelected.some((sel) => String(sel.id) === String(s.id));
+          if (isMine) {
+            return { ...s, status: 'SELECTED' };
+          }
+          return s;
+        });
+
+        setSeatMap({
+          ...data,
+          seats: normalizedBackendSeats,
+        });
+
         if (!isSilent) setError(null);
       } catch (err) {
         console.error('Seat map error:', err);
@@ -50,7 +144,7 @@ export default function SeatMap({
         if (!isSilent) setLoading(false);
       }
     },
-    [flightId, cabinClass]
+    [flightId, cabinClass, onSeatSelected]
   );
 
   useEffect(() => {
@@ -68,20 +162,46 @@ export default function SeatMap({
     return () => clearInterval(interval);
   }, [flightId, fetchSeatMap]);
 
-  // Real-time WebSocket updates for seat status
+  // Real-time WebSocket updates with current-user hold distinction
   useEffect(() => {
     if (!flightId) return;
     const topic = `/topic/seats/${flightId}`;
     const unsubscribe = subscribe(topic, (update) => {
       if (!update || !update.seatId) return;
+
+      const isMine = selectedSeatsRef.current.some(
+        (s) => String(s.id) === String(update.seatId)
+      );
+
+      let effectiveStatus = update.status;
+      if (update.status === 'HELD') {
+        // If seat belongs to current user, preserve SELECTED; otherwise it is HELD by another user
+        effectiveStatus = isMine ? 'SELECTED' : 'HELD';
+      } else if (update.status === 'AVAILABLE' && isMine) {
+        // Hold was released or expired on backend for current user
+        const retained = selectedSeatsRef.current.filter(
+          (s) => String(s.id) !== String(update.seatId)
+        );
+        selectedSeatsRef.current = retained;
+        setSelectedSeats(retained);
+        if (onSeatSelected) onSeatSelected(retained);
+        setHoldTimeLeft((prev) => {
+          const next = { ...prev };
+          delete next[update.seatId];
+          return next;
+        });
+        setInfoMessage('Hold on seat has expired. Seat availability has been refreshed.');
+        effectiveStatus = 'AVAILABLE';
+      }
+
       setSeatMap((prev) => {
         if (!prev || !prev.seats) return prev;
         const updatedSeats = prev.seats.map((seat) => {
-          if (seat.id === update.seatId) {
+          if (String(seat.id) === String(update.seatId)) {
             return {
               ...seat,
-              status: update.status,
-              heldUntil: update.expiresAt || null,
+              status: effectiveStatus,
+              heldUntil: effectiveStatus === 'SELECTED' ? seat.heldUntil : (update.expiresAt || null),
             };
           }
           return seat;
@@ -101,7 +221,7 @@ export default function SeatMap({
     return () => {
       if (typeof unsubscribe === 'function') unsubscribe();
     };
-  }, [flightId, subscribe]);
+  }, [flightId, subscribe, onSeatSelected]);
 
   // Hold countdown timer with automatic expiry handling
   useEffect(() => {
@@ -122,11 +242,10 @@ export default function SeatMap({
 
         if (hasExpired) {
           const expiredSeatIds = Object.keys(prev).filter((id) => !next[id]);
-          setSelectedSeats((current) => {
-            const retained = current.filter((s) => !expiredSeatIds.includes(String(s.id)));
-            if (onSeatSelected) onSeatSelected(retained);
-            return retained;
-          });
+          const retained = selectedSeatsRef.current.filter((s) => !expiredSeatIds.includes(String(s.id)));
+          selectedSeatsRef.current = retained;
+          setSelectedSeats(retained);
+          if (onSeatSelected) onSeatSelected(retained);
           setInfoMessage('Hold on seat has expired. Seat availability has been refreshed.');
           fetchSeatMap(true);
         }
@@ -228,7 +347,8 @@ export default function SeatMap({
       setHoldingSeatId(seatId);
       try {
         await releaseSeatHold(seatId);
-        const updated = selectedSeats.filter((s) => s.id !== seatId);
+        const updated = selectedSeatsRef.current.filter((s) => String(s.id) !== String(seatId));
+        selectedSeatsRef.current = updated;
         setSelectedSeats(updated);
         setHoldTimeLeft((prev) => {
           const next = { ...prev };
@@ -239,7 +359,7 @@ export default function SeatMap({
           if (!prev || !prev.seats) return prev;
           return {
             ...prev,
-            seats: prev.seats.map((s) => (s.id === seatId ? { ...s, status: 'AVAILABLE' } : s)),
+            seats: prev.seats.map((s) => (String(s.id) === String(seatId) ? { ...s, status: 'AVAILABLE' } : s)),
           };
         });
         setError(null);
@@ -250,7 +370,7 @@ export default function SeatMap({
         setHoldingSeatId(null);
       }
     },
-    [selectedSeats, onSeatSelected]
+    [onSeatSelected]
   );
 
   // Click handler on seat button
@@ -262,7 +382,7 @@ export default function SeatMap({
       }
 
       // Check if already selected by this user -> Release hold
-      const isAlreadySelected = selectedSeats.some((s) => s.id === seat.id);
+      const isAlreadySelected = selectedSeatsRef.current.some((s) => String(s.id) === String(seat.id));
       if (isAlreadySelected) {
         await handleDeselectSeat(seat.id);
         return;
@@ -278,7 +398,7 @@ export default function SeatMap({
         return;
       }
 
-      if (selectedSeats.length >= maxSeats) {
+      if (selectedSeatsRef.current.length >= maxSeats) {
         setError(`You can select a maximum of ${maxSeats} ${maxSeats === 1 ? 'seat' : 'seats'} for this booking.`);
         return;
       }
@@ -288,23 +408,23 @@ export default function SeatMap({
       try {
         const hold = await holdSeat(seat.id);
         const holdExpiresAt = hold?.expiresAt || hold?.heldUntil || new Date(Date.now() + 10 * 60 * 1000).toISOString();
-        const updated = [
-          ...selectedSeats,
-          {
-            ...seat,
-            holdId: hold?.id || hold?.holdId,
-            expiresAt: holdExpiresAt,
-            premiumSurcharge: hold?.premiumSurcharge != null ? Number(hold.premiumSurcharge) : Number(seat.premiumSurcharge || 0),
-            price: hold?.seatPrice != null ? Number(hold.seatPrice) : Number(seat.price || 0),
-          },
-        ];
+        const newSelectedSeat = {
+          ...seat,
+          status: 'SELECTED',
+          holdId: hold?.id || hold?.holdId,
+          expiresAt: holdExpiresAt,
+          premiumSurcharge: hold?.premiumSurcharge != null ? Number(hold.premiumSurcharge) : Number(seat.premiumSurcharge || 0),
+          price: hold?.seatPrice != null ? Number(hold.seatPrice) : Number(seat.price || 0),
+        };
+        const updated = [...selectedSeatsRef.current, newSelectedSeat];
+        selectedSeatsRef.current = updated;
         setSelectedSeats(updated);
         setHoldTimeLeft((prev) => ({ ...prev, [seat.id]: holdExpiresAt }));
         setSeatMap((prev) => {
           if (!prev || !prev.seats) return prev;
           return {
             ...prev,
-            seats: prev.seats.map((s) => (s.id === seat.id ? { ...s, status: 'SELECTED' } : s)),
+            seats: prev.seats.map((s) => (String(s.id) === String(seat.id) ? { ...s, status: 'SELECTED' } : s)),
           };
         });
         setError(null);
@@ -334,8 +454,22 @@ export default function SeatMap({
         setHoldingSeatId(null);
       }
     },
-    [isAuthenticated, selectedSeats, navigate, onSeatSelected, flightId, maxSeats, handleDeselectSeat, fetchSeatMap]
+    [isAuthenticated, navigate, onSeatSelected, flightId, maxSeats, handleDeselectSeat, fetchSeatMap]
   );
+
+  // Defensive handler for confirming seat selection
+  const handleConfirmSelection = useCallback(() => {
+    if (!selectedSeats || selectedSeats.length === 0) {
+      setError('Please select at least 1 seat before continuing.');
+      return;
+    }
+    setError(null);
+    if (onContinue) {
+      onContinue();
+    } else if (onSeatSelected) {
+      onSeatSelected(selectedSeats);
+    }
+  }, [selectedSeats, onContinue, onSeatSelected]);
 
   // Summary calculations
   const totalSeatSurcharges = useMemo(() => {
@@ -642,14 +776,34 @@ export default function SeatMap({
 
             {/* Empty Selection State */}
             {selectedSeats.length === 0 ? (
-              <div className="py-8 text-center space-y-2.5">
-                <div className="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center mx-auto text-xl border border-slate-100">
-                  💺
+              <div className="space-y-4">
+                <div className="py-8 text-center space-y-2.5">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center mx-auto text-xl border border-slate-100">
+                    💺
+                  </div>
+                  <div className="text-xs font-semibold text-gray-700">No seat selected yet</div>
+                  <p className="text-[11px] text-gray-400 max-w-xs mx-auto">
+                    Click any available green seat on the aircraft map. Holds are reserved on the backend for 10 minutes.
+                  </p>
                 </div>
-                <div className="text-xs font-semibold text-gray-700">No seat selected yet</div>
-                <p className="text-[11px] text-gray-400 max-w-xs mx-auto">
-                  Click any available green seat on the aircraft map. Holds are reserved on the backend for 10 minutes.
-                </p>
+
+                {error && (
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2 font-medium animate-fade-in shadow-xs">
+                    <span className="text-red-500 font-bold">⚠️</span>
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleConfirmSelection}
+                  disabled={true}
+                  aria-disabled="true"
+                  className="w-full py-3 px-4 bg-gray-200 text-gray-400 rounded-xl text-xs font-bold border border-gray-300 cursor-not-allowed flex items-center justify-center gap-2 transition"
+                >
+                  <span>Confirm Selection (0 Seats Selected)</span>
+                  <span>→</span>
+                </button>
               </div>
             ) : (
               /* Populated Selection List */
@@ -735,13 +889,17 @@ export default function SeatMap({
                   </div>
                 </div>
 
+                {error && (
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2 font-medium animate-fade-in shadow-xs">
+                    <span className="text-red-500 font-bold">⚠️</span>
+                    <span>{error}</span>
+                  </div>
+                )}
+
                 {/* Action CTA */}
                 <button
                   type="button"
-                  onClick={() => {
-                    if (onContinue) onContinue();
-                    else if (onSeatSelected) onSeatSelected(selectedSeats);
-                  }}
+                  onClick={handleConfirmSelection}
                   className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Confirm Selection ({selectedSeats.length} {selectedSeats.length === 1 ? 'Seat' : 'Seats'})</span>
@@ -767,9 +925,9 @@ export default function SeatMap({
       return <div key={col} className="w-8 sm:w-9 h-8 sm:h-9 opacity-0 pointer-events-none" />;
     }
 
-    const isSelected = selectedSeats.some((s) => s.id === seat.id);
+    const isSelected = selectedSeats.some((s) => String(s.id) === String(seat.id)) || seat.status === 'SELECTED';
     const isHeld = (seat.status === 'HELD' || (seat.heldUntil && new Date(seat.heldUntil) > new Date())) && !isSelected;
-    const isBooked = seat.status === 'BOOKED' || seat.status === 'OCCUPIED' || seat.status === 'UNAVAILABLE';
+    const isBooked = (seat.status === 'BOOKED' || seat.status === 'OCCUPIED' || seat.status === 'UNAVAILABLE') && !isSelected;
     const isPremium =
       Number(seat.premiumSurcharge || 0) > 0 || seat.extraLegroom || seat.seatType === 'PREMIUM' || seat.seatType === 'EXTRA_LEGROOM';
     const matchesPref = Boolean(seat.preferenceMatch);
@@ -785,7 +943,7 @@ export default function SeatMap({
     else if (isSelected) bgColor = STATUS_COLORS.SELECTED;
 
     const accessibleLabel = `Seat ${seat.seatNumber}, ${seat.seatType || 'Standard'}, ₹${seat.price + Number(seat.premiumSurcharge || 0)}, ${
-      isBooked ? 'Occupied' : isHeld ? 'Held by another passenger' : isSelected ? 'Selected' : 'Available'
+      isSelected ? 'Selected' : isHeld ? 'Held by another passenger' : isBooked ? 'Occupied' : 'Available'
     }${matchesPref ? ', matches travel preference' : ''}`;
 
     return (
