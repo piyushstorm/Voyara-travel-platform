@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class HolidayPackageSeeder {
@@ -24,9 +26,13 @@ public class HolidayPackageSeeder {
 
     @Transactional
     public void seedHolidayPackages() {
-        long currentCount = holidayRepo.count();
-        if (currentCount >= 40) {
-            log.info("Holiday packages already seeded ({}), skipping.", currentCount);
+        List<HolidayPackage> existingPackages = holidayRepo.findAll();
+        Set<String> existingTitles = existingPackages.stream()
+                .map(HolidayPackage::getTitle)
+                .collect(java.util.stream.Collectors.toSet());
+
+        if (existingTitles.size() >= 12) {
+            log.info("Holiday packages already seeded ({}), skipping.", existingTitles.size());
             return;
         }
 
@@ -181,6 +187,9 @@ public class HolidayPackageSeeder {
 
         List<HolidayPackage> toSave = new ArrayList<>();
         for (SeedConstants.HolidayDef p : packages) {
+            if (existingTitles.contains(p.title())) {
+                continue;
+            }
             HolidayPackage h = new HolidayPackage();
             h.setTitle(p.title());
             h.setDescription(p.desc());

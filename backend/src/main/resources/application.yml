@@ -149,4 +149,4 @@ cors:
 # Seed data configuration for development & testing
 seed:
   data:
-    enabled: ${SEED_DATA_ENABLED:true}
+    enabled: ${SEED_DATA_ENABLED:false}

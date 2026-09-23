@@ -113,7 +113,7 @@ app:
     refresh-token-expiration-ms: 604800000
     issuer: travel-platform
 
-# Production safety: Seed data must never run in production
+# Production seed data configuration — default is false for production safety; can be opted-in via SEED_DATA_ENABLED=true
 seed:
   data:
-    enabled: false
+    enabled: ${SEED_DATA_ENABLED:false}

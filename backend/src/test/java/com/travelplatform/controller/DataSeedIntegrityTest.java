@@ -235,16 +235,33 @@ class DataSeedIntegrityTest {
     @DisplayName("Verify seed process is 100% idempotent when re-run")
     void testSeedIdempotency() throws Exception {
         long airportsBefore = airportRepo.count();
+        long airlinesBefore = airlineRepo.count();
         long flightsBefore = flightRepo.count();
+        long seatsBefore = seatRepo.count();
         long hotelsBefore = hotelRepo.count();
+        long roomsBefore = roomRepo.count();
+        long holidaysBefore = holidayRepo.count();
+        long trainsBefore = trainRepo.count();
+        long busesBefore = busRepo.count();
+        long cabsBefore = cabRepo.count();
         long reviewsBefore = reviewRepo.count();
+        long bookingsBefore = bookingRepo.count();
 
         // Run seeder second time
         seedData.run();
 
         assertThat(airportRepo.count()).isEqualTo(airportsBefore);
+        assertThat(airlineRepo.count()).isEqualTo(airlinesBefore);
         assertThat(flightRepo.count()).isEqualTo(flightsBefore);
+        assertThat(seatRepo.count()).isEqualTo(seatsBefore);
         assertThat(hotelRepo.count()).isEqualTo(hotelsBefore);
+        assertThat(roomRepo.count()).isEqualTo(roomsBefore);
+        assertThat(holidaysBefore).isGreaterThan(0);
+        assertThat(holidayRepo.count()).isEqualTo(holidaysBefore);
+        assertThat(trainRepo.count()).isEqualTo(trainsBefore);
+        assertThat(busRepo.count()).isEqualTo(busesBefore);
+        assertThat(cabRepo.count()).isEqualTo(cabsBefore);
         assertThat(reviewRepo.count()).isEqualTo(reviewsBefore);
+        assertThat(bookingRepo.count()).isEqualTo(bookingsBefore);
     }
 }

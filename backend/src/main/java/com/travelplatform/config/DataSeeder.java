@@ -25,7 +25,7 @@ public class DataSeeder {
 
     private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
 
-    @Value("${seed.data.enabled:true}")
+    @Value("${seed.data.enabled:false}")
     private boolean seedDataEnabled;
 
     @Bean
@@ -63,19 +63,25 @@ public class DataSeeder {
                                TrackedFlightRepository trackedFlightRepo) {
         return args -> {
             // =========================================================================
-            // 1. PRODUCTION SAFETY GUARD
+            // 1. SEED DATA ENABLEMENT & PRODUCTION SAFETY GUARD
             // =========================================================================
+            if (!seedDataEnabled) {
+                log.info("SEED_DATA_ENABLED=false (seed.data.enabled=false) — skipping mock/catalog data seeding.");
+                return;
+            }
+
             boolean isProdProfile = Arrays.stream(env.getActiveProfiles())
                     .anyMatch(p -> p.equalsIgnoreCase("prod") || p.equalsIgnoreCase("production"));
 
-            if (isProdProfile || !seedDataEnabled) {
-                log.info("Production profile detected or seed.data.enabled=false — skipping mock data seeding.");
-                return;
+            if (isProdProfile) {
+                log.warn("SEED_DATA_ENABLED=true in PRODUCTION environment! Running idempotent mock/catalog data seeder pipeline on production database.");
+            } else {
+                log.info("SEED_DATA_ENABLED=true — Starting mock/catalog data seeder pipeline.");
             }
 
             long startTime = System.currentTimeMillis();
             log.info("================================================================================");
-            log.info("STARTING DETERMINISTIC MOCK DATA SEED PIPELINE FOR VOYARA");
+            log.info("STARTING DETERMINISTIC MOCK DATA SEED PIPELINE FOR VOYARA (SEED_DATA_ENABLED=true)");
             log.info("================================================================================");
 
             // 1. Static Catalog: Add-Ons & Policies (Always idempotent)
@@ -128,26 +134,27 @@ public class DataSeeder {
 
             long elapsed = System.currentTimeMillis() - startTime;
             log.info("================================================================================");
-            log.info("VOYARA SEED PIPELINE COMPLETED IN {} ms", elapsed);
+            log.info("VOYARA SEED PIPELINE COMPLETED IN {} ms (SEED_DATA_ENABLED=true)", elapsed);
             log.info("--------------------------------------------------------------------------------");
-            log.info("Airports:         {}", airportRepo.count());
-            log.info("Airlines:         {}", airlineRepo.count());
-            log.info("Flights:          {}", flightRepo.count());
-            log.info("Flight Seats:     {}", seatRepo.count());
-            log.info("Hotels:           {}", hotelRepo.count());
-            log.info("Rooms:            {}", roomRepo.count());
-            log.info("Destinations:     {}", destinationRepo.count());
-            log.info("Recommendations:  {}", recRepo.count());
-            log.info("Trains:           {}", trainRepo.count());
-            log.info("Buses:            {}", busRepo.count());
-            log.info("Cabs:             {}", cabRepo.count());
-            log.info("Holiday Packages: {}", holidayRepo.count());
-            log.info("Reviews:          {}", reviewRepo.count());
-            log.info("Bookings:         {}", bookingRepo.count());
-            log.info("Price History:    {}", priceHistoryRepo.count());
-            log.info("Price Freezes:    {}", priceFreezeRepo.count());
-            log.info("Notifications:    {}", notificationRepo.count());
-            log.info("Tracked Flights:  {}", trackedFlightRepo.count());
+            log.info("Major Entity Record Counts in Database (Existing & Seeded):");
+            log.info("  Airports:         {}", airportRepo.count());
+            log.info("  Airlines:         {}", airlineRepo.count());
+            log.info("  Flights:          {}", flightRepo.count());
+            log.info("  Flight Seats:     {}", seatRepo.count());
+            log.info("  Hotels:           {}", hotelRepo.count());
+            log.info("  Rooms:            {}", roomRepo.count());
+            log.info("  Destinations:     {}", destinationRepo.count());
+            log.info("  Recommendations:  {}", recRepo.count());
+            log.info("  Trains:           {}", trainRepo.count());
+            log.info("  Buses:            {}", busRepo.count());
+            log.info("  Cabs:             {}", cabRepo.count());
+            log.info("  Holiday Packages: {}", holidayRepo.count());
+            log.info("  Reviews:          {}", reviewRepo.count());
+            log.info("  Bookings:         {}", bookingRepo.count());
+            log.info("  Price History:    {}", priceHistoryRepo.count());
+            log.info("  Price Freezes:    {}", priceFreezeRepo.count());
+            log.info("  Notifications:    {}", notificationRepo.count());
+            log.info("  Tracked Flights:  {}", trackedFlightRepo.count());
             log.info("================================================================================");
         };
     }
