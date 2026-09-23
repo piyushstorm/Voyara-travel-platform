@@ -20,7 +20,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
@@ -107,18 +112,41 @@ public class SecurityConfig {
         return http.build();
     }
 
+    public static final List<String> DEFAULT_ALLOWED_ORIGIN_PATTERNS = List.of(
+        "https://*.vercel.app",
+        "https://voyara*.vercel.app",
+        "https://voyara.com",
+        "https://www.voyara.com",
+        "https://*.up.railway.app",
+        "http://localhost:*",
+        "http://127.0.0.1:*"
+    );
+
     @Value("${cors.allowed-origins:http://localhost:5173,http://localhost:5174,http://localhost:3000,https://*.vercel.app}")
     private String allowedOrigins;
+
+    public static List<String> parseAllowedOriginPatterns(String rawOrigins) {
+        Set<String> patterns = new LinkedHashSet<>(DEFAULT_ALLOWED_ORIGIN_PATTERNS);
+        if (rawOrigins != null && !rawOrigins.isBlank()) {
+            for (String raw : rawOrigins.split(",")) {
+                String cleaned = raw.trim()
+                        .replaceAll("^[\"']+|[\"']+$", "")
+                        .replaceAll("/+$", "")
+                        .trim();
+                if (!cleaned.isEmpty()) {
+                    patterns.add(cleaned);
+                }
+            }
+        }
+        return new ArrayList<>(patterns);
+    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        List<String> origins = java.util.Arrays.stream(allowedOrigins.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .toList();
+        List<String> origins = parseAllowedOriginPatterns(allowedOrigins);
         config.setAllowedOriginPatterns(origins);
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization", "Link", "X-Total-Count"));
         config.setAllowCredentials(true);
@@ -127,6 +155,11 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        return new CorsFilter(corsConfigurationSource());
     }
 
     @Bean

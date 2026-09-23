@@ -23,10 +23,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        String[] originPatterns = java.util.Arrays.stream(allowedOrigins.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .toArray(String[]::new);
+        String[] originPatterns = SecurityConfig.parseAllowedOriginPatterns(allowedOrigins).toArray(String[]::new);
 
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns(originPatterns);
