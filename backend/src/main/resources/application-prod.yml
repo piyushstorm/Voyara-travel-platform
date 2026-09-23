@@ -7,9 +7,9 @@
 
 spring:
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/travel_platform}
-    username: ${POSTGRES_USER:?Set POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    url: jdbc:postgresql://${PGHOST}:${PGPORT:5432}/${PGDATABASE}
+    username: ${PGUSER}
+    password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
 
     # HikariCP connection pool — production tuned
