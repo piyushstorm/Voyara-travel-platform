@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="kerSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#065f46"/>
+      <stop offset="30%" stop-color="#047857"/>
+      <stop offset="70%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#fef08a"/>
+    </linearGradient>
+    <linearGradient id="kerWater" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="60%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#022c22"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Tropical Backwaters Sky -->
+  <rect width="800" height="450" fill="url(#kerSky)"/>
+
+  <!-- Sun -->
+  <circle cx="280" cy="180" r="50" fill="#fef9c3" opacity="0.9"/>
+  <circle cx="280" cy="180" r="80" fill="#fef08a" opacity="0.3"/>
+
+  <!-- Distant Lush Hills -->
+  <path d="M0,230 Q150,180 320,220 T650,200 T800,225 L800,260 L0,260 Z" fill="#064e3b" opacity="0.8"/>
+  <path d="M0,245 Q200,210 420,240 T800,235 L800,270 L0,270 Z" fill="#065f46"/>
+
+  <!-- Water Surface -->
+  <rect y="260" width="800" height="190" fill="url(#kerWater)"/>
+
+  <!-- Palm Forest on Banks -->
+  <g fill="#022c22">
+    <!-- Left Bank Palms -->
+    <path d="M-20,270 Q40,160 50,140 Q40,140 20,270 Z"/>
+    <path d="M50,140 Q10,110 -20,130 Q15,115 50,140 Z"/>
+    <path d="M50,140 Q60,90 40,80 Q50,110 50,140 Z"/>
+    <path d="M50,140 Q90,105 120,125 Q80,120 50,140 Z"/>
+
+    <path d="M60,270 Q110,180 120,150 Q110,150 90,270 Z"/>
+    <path d="M120,150 Q80,125 50,140 Q85,130 120,150 Z"/>
+    <path d="M120,150 Q150,120 180,135 Q145,130 120,150 Z"/>
+
+    <!-- Right Bank Palms -->
+    <path d="M780,270 Q730,160 720,130 Q730,130 760,270 Z"/>
+    <path d="M720,130 Q670,110 650,130 Q685,115 720,130 Z"/>
+    <path d="M720,130 Q750,90 770,110 Q740,110 720,130 Z"/>
+  </g>
+
+  <!-- Traditional Kerala Kettuvallam (Houseboat) -->
+  <g transform="translate(340, 275)">
+    <!-- Wooden Hull -->
+    <path d="M-100,50 Q20,75 180,45 Q210,35 240,20 Q190,58 30,65 Q-80,62 -120,25 Z" fill="#451a03"/>
+    <path d="M-120,25 Q-30,45 80,45 Q170,40 240,20 Q170,30 60,30 Q-50,28 -120,25 Z" fill="#78350f"/>
+    <!-- Thatch Curved Roof -->
+    <path d="M-40,25 Q60,-20 170,20 L160,28 Q60,-10 -30,28 Z" fill="#d97706"/>
+    <path d="M-40,25 Q60,-12 160,25 L160,30 Q60,-5 -30,30 Z" fill="#b45309"/>
+    <!-- Bamboo Structure Ribs -->
+    <path d="M-20,18 Q40,-5 120,16" stroke="#92400e" stroke-width="2" fill="none"/>
+    <path d="M-10,23 Q50,0 140,20" stroke="#92400e" stroke-width="2" fill="none"/>
+    <!-- Windows / Open Living Room -->
+    <rect x="0" y="15" width="25" height="15" rx="3" fill="#fef08a" opacity="0.8"/>
+    <rect x="35" y="15" width="25" height="15" rx="3" fill="#fef08a" opacity="0.8"/>
+    <rect x="70" y="15" width="25" height="15" rx="3" fill="#fef08a" opacity="0.8"/>
+    <!-- Boatman with Bamboo Pole -->
+    <circle cx="215" cy="12" r="5" fill="#1e293b"/>
+    <line x1="215" y1="17" x2="215" y2="30" stroke="#1e293b" stroke-width="3"/>
+    <line x1="225" y1="5" x2="195" y2="55" stroke="#78350f" stroke-width="2.5"/>
+  </g>
+
+  <!-- Water Ripples -->
+  <ellipse cx="430" cy="350" rx="120" ry="4" fill="#a7f3d0" opacity="0.4"/>
+  <ellipse cx="430" cy="375" rx="90" ry="3" fill="#a7f3d0" opacity="0.3"/>
+
+  <!-- Destination Label Overlay -->
+  <rect x="24" y="24" width="120" height="34" rx="8" fill="#064e3b" fill-opacity="0.75"/>
+  <text x="36" y="47" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#ffffff" letter-spacing="1">KERALA</text>
+  <text x="108" y="47" font-size="14">🌴</text>
+</svg>

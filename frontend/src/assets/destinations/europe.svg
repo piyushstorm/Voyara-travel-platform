@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="eurSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="35%" stop-color="#3b82f6"/>
+      <stop offset="70%" stop-color="#93c5fd"/>
+      <stop offset="100%" stop-color="#fbcfe8"/>
+    </linearGradient>
+    <linearGradient id="eurRiver" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="50%" stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#1e3a8a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="800" height="450" fill="url(#eurSky)"/>
+
+  <!-- Distant Swiss Alps Snow Peaks -->
+  <polygon points="-50,230 120,90 290,230" fill="#94a3b8" opacity="0.6"/>
+  <polygon points="120,90 145,130 115,145 95,120 120,90" fill="#ffffff" opacity="0.8"/>
+
+  <polygon points="150,230 350,70 550,230" fill="#64748b" opacity="0.5"/>
+  <polygon points="350,70 380,120 340,135 320,110 350,70" fill="#ffffff" opacity="0.8"/>
+
+  <!-- Parisian Cityscape & Haussmann Rooftops Left & Right -->
+  <g fill="#1e293b">
+    <rect x="40" y="220" width="140" height="90"/>
+    <!-- Mansard Roofs -->
+    <polygon points="30,220 50,170 170,170 190,220" fill="#334155"/>
+    <!-- Chimneys -->
+    <rect x="65" y="155" width="8" height="15" fill="#475569"/>
+    <rect x="85" y="155" width="8" height="15" fill="#475569"/>
+    <rect x="135" y="155" width="8" height="15" fill="#475569"/>
+
+    <rect x="580" y="220" width="180" height="90"/>
+    <polygon points="570,220 590,170 750,170 770,220" fill="#334155"/>
+    <rect x="620" y="155" width="8" height="15" fill="#475569"/>
+    <rect x="680" y="155" width="8" height="15" fill="#475569"/>
+  </g>
+
+  <!-- EIFFEL TOWER CENTERPIECE -->
+  <g transform="translate(400, 310)" fill="#0f172a">
+    <!-- Base Arch Legs -->
+    <path d="M-55,0 Q-45,-45 -22,-60 L-35,-60 Q-45,-40 -65,0 Z"/>
+    <path d="M55,0 Q45,-45 22,-60 L35,-60 Q45,-40 65,0 Z"/>
+    <path d="M-35,-25 Q0,-45 35,-25 L32,-15 Q0,-35 -32,-15 Z" fill="#0f172a"/>
+
+    <!-- Platform 1 -->
+    <rect x="-38" y="-68" width="76" height="8"/>
+
+    <!-- Middle Tier -->
+    <polygon points="-28,-68 -15,-160 15,-160 28,-68"/>
+    <!-- Cross struts middle -->
+    <line x1="-22" y1="-75" x2="16" y2="-155" stroke="#fbcfe8" stroke-width="1.5" opacity="0.4"/>
+    <line x1="22" y1="-75" x2="-16" y2="-155" stroke="#fbcfe8" stroke-width="1.5" opacity="0.4"/>
+
+    <!-- Platform 2 -->
+    <rect x="-20" y="-167" width="40" height="7"/>
+
+    <!-- Upper Spire Column -->
+    <polygon points="-12,-167 -4,-250 4,-250 12,-167"/>
+
+    <!-- Summit Dome and Antenna Spire -->
+    <ellipse cx="0" cy="-252" rx="6" ry="3"/>
+    <line x1="0" y1="-252" x2="0" y2="-280" stroke="#0f172a" stroke-width="3"/>
+    <circle cx="0" cy="-280" r="3" fill="#fef08a"/>
+    <!-- Summit Light Beam -->
+    <polygon points="0,-280 -60,-330 60,-330" fill="#fef08a" opacity="0.15"/>
+  </g>
+
+  <!-- Seine River Waterfront -->
+  <rect y="310" width="800" height="140" fill="url(#eurRiver)"/>
+
+  <!-- River Cruise Boat (Bateau Mouche) -->
+  <g transform="translate(240, 360)">
+    <path d="M0,15 L90,15 L105,5 L10,5 Z" fill="#f8fafc"/>
+    <rect x="20" y="-2" width="60" height="7" rx="2" fill="#38bdf8" opacity="0.8"/>
+  </g>
+
+  <!-- Destination Label Overlay -->
+  <rect x="24" y="24" width="125" height="34" rx="8" fill="#1e1b4b" fill-opacity="0.75"/>
+  <text x="36" y="47" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#ffffff" letter-spacing="1">EUROPE</text>
+  <text x="112" y="47" font-size="14">🗼</text>
+</svg>

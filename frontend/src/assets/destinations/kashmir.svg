@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="35%" stop-color="#3b82f6"/>
+      <stop offset="70%" stop-color="#93c5fd"/>
+      <stop offset="100%" stop-color="#fed7aa"/>
+    </linearGradient>
+    <linearGradient id="lakeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#075985"/>
+    </linearGradient>
+    <linearGradient id="snowGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <linearGradient id="mountainGradFar" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+    <linearGradient id="mountainGradMid" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="800" height="450" fill="url(#skyGrad)"/>
+
+  <!-- Morning Sun -->
+  <circle cx="480" cy="180" r="45" fill="#fef08a" opacity="0.85"/>
+  <circle cx="480" cy="180" r="75" fill="#fef08a" opacity="0.25"/>
+
+  <!-- Far Himalayan Snow Peaks -->
+  <polygon points="50,260 170,120 280,260" fill="url(#mountainGradFar)"/>
+  <polygon points="170,120 190,148 160,165 140,145 170,120" fill="url(#snowGrad1)"/>
+
+  <polygon points="200,260 360,90 520,260" fill="url(#mountainGradFar)"/>
+  <polygon points="360,90 400,140 370,155 340,135 320,150 360,90" fill="url(#snowGrad1)"/>
+
+  <polygon points="460,260 590,110 720,260" fill="url(#mountainGradFar)"/>
+  <polygon points="590,110 630,155 600,165 570,140 590,110" fill="url(#snowGrad1)"/>
+
+  <polygon points="650,260 760,150 850,260" fill="url(#mountainGradFar)"/>
+
+  <!-- Mid Range Alpine Ridges -->
+  <polygon points="-50,280 80,180 220,280" fill="url(#mountainGradMid)"/>
+  <polygon points="180,280 320,195 460,280" fill="url(#mountainGradMid)"/>
+  <polygon points="400,280 540,185 680,280" fill="url(#mountainGradMid)"/>
+  <polygon points="620,280 730,190 850,280" fill="url(#mountainGradMid)"/>
+
+  <!-- Pine Tree Silhouettes -->
+  <g fill="#0f172a">
+    <!-- Left grove -->
+    <polygon points="20,280 35,230 50,280"/>
+    <polygon points="40,280 55,220 70,280"/>
+    <polygon points="65,280 80,235 95,280"/>
+    <polygon points="85,280 100,215 115,280"/>
+    <!-- Right grove -->
+    <polygon points="690,280 705,225 720,280"/>
+    <polygon points="715,280 730,210 745,280"/>
+    <polygon points="740,280 755,230 770,280"/>
+    <polygon points="765,280 780,220 795,280"/>
+  </g>
+
+  <!-- Dal Lake Water -->
+  <rect y="270" width="800" height="180" fill="url(#lakeGrad)"/>
+
+  <!-- Water Reflections -->
+  <ellipse cx="480" cy="290" rx="90" ry="6" fill="#fef08a" opacity="0.3"/>
+  <ellipse cx="480" cy="310" rx="70" ry="4" fill="#fef08a" opacity="0.2"/>
+  <ellipse cx="480" cy="335" rx="50" ry="3" fill="#fef08a" opacity="0.15"/>
+
+  <!-- Shikara Boat on Dal Lake -->
+  <g transform="translate(310, 310)">
+    <!-- Hull -->
+    <path d="M-80,45 Q0,65 140,40 Q155,38 175,25 Q145,52 0,55 Q-65,52 -95,30 Z" fill="#451a03"/>
+    <path d="M-95,30 Q-40,48 50,48 Q120,45 175,25 Q115,35 0,35 Q-60,33 -95,30 Z" fill="#78350f"/>
+    <!-- Canopy (Roof) -->
+    <path d="M-20,12 L80,10 L95,15 L-10,18 Z" fill="#b91c1c"/>
+    <polygon points="-20,12 80,10 75,2 5,4" fill="#dc2626"/>
+    <!-- Canopy Pillars -->
+    <line x1="-15" y1="18" x2="-15" y2="40" stroke="#78350f" stroke-width="3"/>
+    <line x1="25" y1="16" x2="25" y2="42" stroke="#78350f" stroke-width="3"/>
+    <line x1="75" y1="14" x2="75" y2="40" stroke="#78350f" stroke-width="3"/>
+    <!-- Curtains/Drapes -->
+    <path d="M-15,18 Q-5,24 5,17 Q15,24 25,16 Q45,23 65,15 Q72,21 78,14" fill="none" stroke="#fef08a" stroke-width="2"/>
+    <!-- Shikara Oar / Boatman silhouette -->
+    <circle cx="-50" cy="22" r="6" fill="#1e293b"/>
+    <path d="M-56,38 Q-50,28 -44,38 Z" fill="#1e293b"/>
+    <line x1="-55" y1="28" x2="-85" y2="55" stroke="#92400e" stroke-width="2"/>
+    <polygon points="-85,55 -95,65 -88,68 -80,58" fill="#78350f"/>
+  </g>
+
+  <!-- Floating Lotus Flowers -->
+  <g fill="#f43f5e" opacity="0.9">
+    <ellipse cx="180" cy="385" rx="14" ry="4" fill="#047857"/>
+    <circle cx="180" cy="382" r="5"/>
+    <ellipse cx="230" cy="415" rx="18" ry="5" fill="#047857"/>
+    <circle cx="230" cy="412" r="6"/>
+    <ellipse cx="620" cy="390" rx="16" ry="5" fill="#047857"/>
+    <circle cx="620" cy="387" r="5"/>
+  </g>
+
+  <!-- Destination Label Overlay -->
+  <rect x="24" y="24" width="130" height="34" rx="8" fill="#0f172a" fill-opacity="0.6"/>
+  <text x="36" y="47" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#ffffff" letter-spacing="1">KASHMIR</text>
+  <text x="118" y="47" font-size="14">🏔️</text>
+</svg>

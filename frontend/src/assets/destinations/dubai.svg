@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="dubaiSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="40%" stop-color="#1e1b4b"/>
+      <stop offset="75%" stop-color="#4338ca"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="dubaiWater" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#312e81"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Twilight Sky -->
+  <rect width="800" height="450" fill="url(#dubaiSky)"/>
+
+  <!-- Crescent Moon -->
+  <path d="M680,60 A24,24 0 0,0 670,105 A22,22 0 1,1 680,60 Z" fill="#fef08a"/>
+
+  <!-- Modern City Skyline Silhouette -->
+  <g fill="#020617">
+    <!-- Background towers -->
+    <rect x="80" y="210" width="45" height="100"/>
+    <rect x="140" y="170" width="55" height="140"/>
+    <polygon points="140,170 167,130 195,170"/>
+
+    <rect x="210" y="190" width="40" height="120"/>
+
+    <!-- Burj Al Arab shape Left-Center -->
+    <path d="M265,310 Q285,160 330,160 L330,310 Z" fill="#090d16"/>
+    <path d="M330,160 Q345,180 345,310 L330,310 Z" fill="#0f172a"/>
+    <line x1="330" y1="160" x2="330" y2="140" stroke="#f59e0b" stroke-width="2"/>
+
+    <!-- BURJ KHALIFA - Towering Centerpiece -->
+    <g transform="translate(420, 310)">
+      <!-- Tier 1 Base -->
+      <polygon points="-40,0 -35,-80 35,-80 40,0" fill="#090d16"/>
+      <!-- Tier 2 -->
+      <polygon points="-30,-80 -25,-160 25,-160 30,-80" fill="#090d16"/>
+      <!-- Tier 3 -->
+      <polygon points="-20,-160 -15,-220 15,-220 20,-160" fill="#090d16"/>
+      <!-- Tier 4 Spire -->
+      <polygon points="-10,-220 -5,-265 5,-265 10,-220" fill="#090d16"/>
+      <line x1="0" y1="-265" x2="0" y2="-295" stroke="#fef08a" stroke-width="2.5"/>
+      <circle cx="0" cy="-295" r="3" fill="#fef08a"/>
+
+      <!-- Window Glows -->
+      <line x1="-15" y1="-100" x2="15" y2="-100" stroke="#fef08a" stroke-width="1.5" opacity="0.7"/>
+      <line x1="-12" y1="-140" x2="12" y2="-140" stroke="#fef08a" stroke-width="1.5" opacity="0.7"/>
+      <line x1="-8" y1="-180" x2="8" y2="-180" stroke="#fef08a" stroke-width="1.5" opacity="0.7"/>
+    </g>
+
+    <!-- Right Skyline Towers -->
+    <rect x="490" y="160" width="50" height="150"/>
+    <polygon points="490,160 515,125 540,160"/>
+
+    <rect x="560" y="190" width="60" height="120"/>
+    <rect x="635" y="150" width="40" height="160"/>
+    <polygon points="635,150 655,110 675,150"/>
+
+    <rect x="690" y="220" width="55" height="90"/>
+  </g>
+
+  <!-- Marina Water -->
+  <rect y="310" width="800" height="140" fill="url(#dubaiWater)"/>
+
+  <!-- Skyline Light Reflections in Marina -->
+  <g opacity="0.4">
+    <ellipse cx="420" cy="335" rx="20" ry="4" fill="#fef08a"/>
+    <ellipse cx="420" cy="360" rx="35" ry="5" fill="#fef08a"/>
+    <ellipse cx="420" cy="390" rx="50" ry="6" fill="#f59e0b"/>
+    <ellipse cx="300" cy="340" rx="25" ry="4" fill="#38bdf8"/>
+    <ellipse cx="515" cy="345" rx="30" ry="4" fill="#f59e0b"/>
+    <ellipse cx="655" cy="340" rx="25" ry="4" fill="#38bdf8"/>
+  </g>
+
+  <!-- Luxury Yacht in Marina -->
+  <g transform="translate(220, 370)">
+    <path d="M0,20 L110,20 L130,5 L20,5 Z" fill="#f8fafc"/>
+    <path d="M30,5 L85,5 L75,-10 L40,-10 Z" fill="#e2e8f0"/>
+    <rect x="45" y="-6" width="30" height="6" fill="#0284c7" opacity="0.8"/>
+  </g>
+
+  <!-- Destination Label Overlay -->
+  <rect x="24" y="24" width="115" height="34" rx="8" fill="#0f172a" fill-opacity="0.75"/>
+  <text x="36" y="47" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#ffffff" letter-spacing="1">DUBAI</text>
+  <text x="100" y="47" font-size="14">🏙️</text>
+</svg>
