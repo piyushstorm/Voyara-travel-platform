@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { holidayApi } from '../api/holidayApi';
+import DestinationImage from '../components/common/DestinationImage';
 
 function StarRating({ rating, size = 'sm' }) {
   const cls = size === 'lg' ? 'text-lg' : size === 'md' ? 'text-base' : 'text-sm';
@@ -100,15 +101,15 @@ export default function HolidayDetail() {
         <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 mb-5">
           {/* Image Gallery */}
           <div className="relative">
-            {pkg.imageUrl ? (
-              <div className="h-56 sm:h-72 md:h-80">
-                <img src={pkg.imageUrl} alt={pkg.title} className="w-full h-full object-cover" />
-              </div>
-            ) : (
-              <div className="h-56 sm:h-72 md:h-80 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-                <span className="text-7xl">🌴</span>
-              </div>
-            )}
+            <div className="h-56 sm:h-72 md:h-80 bg-slate-100 overflow-hidden">
+              <DestinationImage
+                src={pkg.imageUrl}
+                alt={pkg.title}
+                destination={pkg.destination}
+                title={pkg.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
             {pkg.tripType === 'INTERNATIONAL' && (
               <span className="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-lg shadow-sm uppercase tracking-wider">International</span>
             )}

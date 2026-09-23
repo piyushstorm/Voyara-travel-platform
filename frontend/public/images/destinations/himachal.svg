@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="himSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="50%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#f0fdf4"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#himSky)"/>
+  <polygon points="50,260 200,90 350,260" fill="#64748b"/>
+  <polygon points="200,90 230,135 190,150 170,125 200,90" fill="#ffffff"/>
+  <polygon points="250,260 450,60 650,260" fill="#475569"/>
+  <polygon points="450,60 490,120 455,135 415,115 395,140 450,60" fill="#ffffff"/>
+  <polygon points="520,260 680,100 820,260" fill="#64748b"/>
+  <polygon points="680,100 710,140 675,150 655,130 680,100" fill="#ffffff"/>
+  <polygon points="-50,310 150,200 350,310" fill="#166534"/>
+  <polygon points="250,310 480,190 700,310" fill="#15803d"/>
+  <polygon points="550,310 750,200 920,310" fill="#166534"/>
+  <rect y="300" width="800" height="150" fill="#14532d"/>
+  <g fill="#052e16">
+    <polygon points="40,440 70,270 100,440"/>
+    <polygon points="80,450 115,250 150,450"/>
+    <polygon points="630,440 660,260 690,440"/>
+    <polygon points="670,450 705,240 740,450"/>
+  </g>
+  <rect x="24" y="24" width="140" height="34" rx="8" fill="#0f172a" fill-opacity="0.6"/>
+  <text x="36" y="47" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#ffffff" letter-spacing="1">HIMACHAL</text>
+  <text x="126" y="47" font-size="14">⛰️</text>
+</svg>

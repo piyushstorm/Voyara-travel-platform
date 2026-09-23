@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="thaiSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="40%" stop-color="#38bdf8"/>
+      <stop offset="75%" stop-color="#fed7aa"/>
+      <stop offset="100%" stop-color="#fef08a"/>
+    </linearGradient>
+    <linearGradient id="thaiSea" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="50%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="karstGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="800" height="450" fill="url(#thaiSky)"/>
+
+  <!-- Emerald Sea -->
+  <rect y="230" width="800" height="220" fill="url(#thaiSea)"/>
+
+  <!-- Iconic Phuket/Krabi Limestone Karsts (Phi Phi islands) -->
+  <!-- Left Karst -->
+  <path d="M60,280 Q70,120 110,80 Q130,120 140,280 Z" fill="url(#karstGrad)"/>
+  <path d="M80,120 Q110,100 125,120" stroke="#16a34a" stroke-width="6" fill="none"/>
+
+  <!-- Center-Right Monumental Karst Island -->
+  <path d="M420,290 Q400,100 460,40 Q520,70 540,290 Z" fill="url(#karstGrad)"/>
+  <path d="M430,90 Q465,65 500,90" stroke="#16a34a" stroke-width="8" fill="none"/>
+  <path d="M440,150 Q480,130 520,150" stroke="#16a34a" stroke-width="6" fill="none"/>
+
+  <!-- Far Island Silhouette -->
+  <polygon points="260,250 320,180 380,250" fill="#047857" opacity="0.6"/>
+
+  <!-- Traditional Thai Longtail Boat -->
+  <g transform="translate(240, 290)">
+    <!-- Wooden Hull -->
+    <path d="M-60,35 Q20,50 110,30 Q130,15 150,-10 Q120,38 20,45 Q-40,42 -75,25 Z" fill="#78350f"/>
+    <!-- Elevated Prow (Bow) -->
+    <path d="M110,30 Q130,15 155,-20 L160,-15 Q135,18 115,35 Z" fill="#b45309"/>
+    <!-- Colorful Ribbon Garland on Prow -->
+    <line x1="150" y1="-10" x2="165" y2="-5" stroke="#ef4444" stroke-width="4"/>
+    <line x1="152" y1="-7" x2="167" y2="-2" stroke="#eab308" stroke-width="4"/>
+    <line x1="154" y1="-4" x2="169" y2="1" stroke="#3b82f6" stroke-width="4"/>
+    <!-- Boat Canopy -->
+    <rect x="-20" y="10" width="70" height="2" fill="#451a03"/>
+    <polygon points="-20,10 50,10 40,2 -10,2" fill="#f59e0b"/>
+    <line x1="-15" y1="10" x2="-15" y2="35" stroke="#451a03" stroke-width="2"/>
+    <line x1="45" y1="10" x2="45" y2="35" stroke="#451a03" stroke-width="2"/>
+    <!-- Longtail Engine Shaft extending into water -->
+    <line x1="-55" y1="25" x2="-110" y2="45" stroke="#334155" stroke-width="3"/>
+    <polygon points="-110,45 -118,48 -112,52" fill="#334155"/>
+  </g>
+
+  <!-- Destination Label Overlay -->
+  <rect x="24" y="24" width="135" height="34" rx="8" fill="#0f172a" fill-opacity="0.6"/>
+  <text x="36" y="47" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#ffffff" letter-spacing="1">THAILAND</text>
+  <text x="122" y="47" font-size="14">🛕</text>
+</svg>

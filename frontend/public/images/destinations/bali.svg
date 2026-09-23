@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="baliSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ea580c"/>
+      <stop offset="35%" stop-color="#f59e0b"/>
+      <stop offset="70%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#a7f3d0"/>
+    </linearGradient>
+    <linearGradient id="terraceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#15803d"/>
+      <stop offset="50%" stop-color="#166534"/>
+      <stop offset="100%" stop-color="#14532d"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="800" height="450" fill="url(#baliSky)"/>
+
+  <!-- Sacred Volcano Mount Agung in Distance -->
+  <polygon points="150,250 400,90 650,250" fill="#475569" opacity="0.6"/>
+
+  <!-- Stepped Emerald Rice Terraces -->
+  <g fill="url(#terraceGrad)">
+    <path d="M0,230 Q250,210 500,240 T800,220 L800,280 L0,280 Z"/>
+    <path d="M0,270 Q300,250 600,280 T800,260 L800,320 L0,320 Z" fill="#166534"/>
+    <path d="M0,310 Q200,290 500,320 T800,300 L800,370 L0,370 Z" fill="#14532d"/>
+    <path d="M0,360 Q350,330 700,370 T800,350 L800,450 L0,450 Z" fill="#052e16"/>
+  </g>
+
+  <!-- Traditional Balinese Split Gate (Candi Bentar) Center -->
+  <g transform="translate(400, 310)" fill="#1c1917">
+    <!-- Left Wing of Gate -->
+    <path d="M-60,0 L-60,-130 L-45,-120 L-45,-90 L-30,-80 L-30,-50 L-15,-40 L-15,0 Z"/>
+    <!-- Intricate carves left -->
+    <polygon points="-60,-130 -70,-115 -60,-100"/>
+    <polygon points="-45,-90 -55,-75 -45,-60"/>
+    <polygon points="-30,-50 -40,-35 -30,-20"/>
+
+    <!-- Right Wing of Gate -->
+    <path d="M60,0 L60,-130 L45,-120 L45,-90 L30,-80 L30,-50 L15,-40 L15,0 Z"/>
+    <!-- Intricate carves right -->
+    <polygon points="60,-130 70,-115 60,-100"/>
+    <polygon points="45,-90 55,-75 45,-60"/>
+    <polygon points="30,-50 40,-35 30,-20"/>
+
+    <!-- Steps leading through the gate -->
+    <polygon points="-45,0 45,0 60,35 -60,35" fill="#292524"/>
+    <polygon points="-60,35 60,35 75,65 -75,65" fill="#1c1917"/>
+  </g>
+
+  <!-- Balinese Umbrellas (Tedung) on sides -->
+  <g transform="translate(300, 290)">
+    <polygon points="-18,-50 0,-70 18,-50" fill="#eab308"/>
+    <line x1="0" y1="-50" x2="0" y2="40" stroke="#78350f" stroke-width="2.5"/>
+  </g>
+  <g transform="translate(500, 290)">
+    <polygon points="-18,-50 0,-70 18,-50" fill="#eab308"/>
+    <line x1="0" y1="-50" x2="0" y2="40" stroke="#78350f" stroke-width="2.5"/>
+  </g>
+
+  <!-- Tropical Palms Left & Right -->
+  <g fill="#052e16">
+    <path d="M50,450 Q80,300 70,180 Q65,175 75,180 Q90,300 70,450 Z"/>
+    <path d="M70,180 Q20,150 0,175 Q35,145 70,180 Z"/>
+    <path d="M70,180 Q40,115 15,130 Q55,115 70,180 Z"/>
+    <path d="M70,180 Q120,115 145,140 Q105,125 70,180 Z"/>
+
+    <path d="M750,450 Q720,300 730,180 Q735,175 725,180 Q710,300 730,450 Z"/>
+    <path d="M730,180 Q680,150 660,175 Q695,145 730,180 Z"/>
+    <path d="M730,180 Q780,115 805,140 Q765,125 730,180 Z"/>
+  </g>
+
+  <!-- Destination Label Overlay -->
+  <rect x="24" y="24" width="105" height="34" rx="8" fill="#0f172a" fill-opacity="0.6"/>
+  <text x="36" y="47" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#ffffff" letter-spacing="1">BALI</text>
+  <text x="90" y="47" font-size="14">🌺</text>
+</svg>

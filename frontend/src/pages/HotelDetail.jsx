@@ -180,8 +180,16 @@ export default function HotelDetail() {
           {hotelImages.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-1 h-48 md:h-64">
               {hotelImages.slice(0, 4).map((img, i) => (
-                <div key={i} className="relative overflow-hidden">
-                  <img src={img} alt={`${hotel.name} ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                <div key={i} className="relative overflow-hidden bg-slate-100">
+                  <img
+                    src={img}
+                    alt={`${hotel.name} ${i + 1}`}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop&q=80';
+                    }}
+                  />
                 </div>
               ))}
             </div>

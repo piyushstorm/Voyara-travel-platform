@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { holidayApi } from '../api/holidayApi';
+import DestinationImage from '../components/common/DestinationImage';
 
 const SORT_OPTIONS = [
   { value: 'featured', label: 'Recommended' },
@@ -303,14 +304,14 @@ export default function HolidaysResults() {
                     className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all cursor-pointer group"
                     onClick={() => navigate(`/holidays/${pkg.id}`)}>
                     {/* Image */}
-                    <div className="h-48 relative overflow-hidden">
-                      {pkg.imageUrl ? (
-                        <img src={pkg.imageUrl} alt={pkg.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-                          <span className="text-5xl">🌴</span>
-                        </div>
-                      )}
+                    <div className="h-48 relative overflow-hidden bg-slate-100">
+                      <DestinationImage
+                        src={pkg.imageUrl}
+                        alt={pkg.title}
+                        destination={pkg.destination}
+                        title={pkg.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
                       {pkg.tripType === 'INTERNATIONAL' && (
                         <span className="absolute top-3 left-3 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm uppercase tracking-wider">International</span>
                       )}

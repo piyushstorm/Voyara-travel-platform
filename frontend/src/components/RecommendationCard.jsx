@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTomorrowDate } from '../utils/dateUtils';
+import DestinationImage from './common/DestinationImage';
 
 export default function RecommendationCard({ recommendation, onFeedback }) {
   const navigate = useNavigate();
@@ -81,13 +82,14 @@ export default function RecommendationCard({ recommendation, onFeedback }) {
     <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
       {/* Top Banner Image with Gradient Overlay */}
       <div className="relative h-44 w-full cursor-pointer overflow-hidden bg-slate-100" onClick={handleCardClick}>
-        <img
-          src={imageUrl}
+        <DestinationImage
+          src={details.imageUrl}
           alt={headline || 'Travel Recommendation'}
+          destination={details.destination || details.city || details.name || ''}
+          title={headline || details.title || ''}
           className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-          onError={(e) => { e.target.src = fallbackImages[entityType] || fallbackImages.DESTINATION; }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent pointer-events-none" />
 
         {/* Top Badges */}
         <div className="absolute left-3 top-3 flex flex-wrap items-center gap-1.5">

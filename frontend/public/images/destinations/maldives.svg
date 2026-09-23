@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="malSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="50%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="malLagoon" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0891b2"/>
+      <stop offset="35%" stop-color="#06b6d4"/>
+      <stop offset="70%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#2dd4bf"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="800" height="450" fill="url(#malSky)"/>
+
+  <!-- Radiant Tropical Sun -->
+  <circle cx="400" cy="110" r="45" fill="#fef08a" opacity="0.95"/>
+  <circle cx="400" cy="110" r="80" fill="#fef08a" opacity="0.25"/>
+
+  <!-- Crystal Turquoise Indian Ocean Lagoon -->
+  <rect y="210" width="800" height="240" fill="url(#malLagoon)"/>
+
+  <!-- Sandy Shallow Sandbars Underwater -->
+  <ellipse cx="250" cy="270" rx="140" ry="25" fill="#99f6e4" opacity="0.4"/>
+  <ellipse cx="600" cy="280" rx="160" ry="28" fill="#99f6e4" opacity="0.4"/>
+
+  <!-- Wooden Jetty Walkway -->
+  <polygon points="400,210 405,210 440,450 360,450" fill="#78350f"/>
+  <polygon points="400,210 403,210 425,450 375,450" fill="#b45309"/>
+
+  <!-- Overwater Bungalow 1 Left -->
+  <g transform="translate(240, 240)">
+    <!-- Stilts in Water -->
+    <line x1="-30" y1="20" x2="-30" y2="70" stroke="#451a03" stroke-width="4"/>
+    <line x1="30" y1="20" x2="30" y2="70" stroke="#451a03" stroke-width="4"/>
+    <line x1="0" y1="20" x2="0" y2="65" stroke="#451a03" stroke-width="4"/>
+    <!-- Bungalow Deck & Walls -->
+    <rect x="-40" y="-10" width="80" height="35" rx="2" fill="#78350f"/>
+    <!-- Glass Sliders -->
+    <rect x="-25" y="0" width="20" height="25" fill="#bae6fd" opacity="0.8"/>
+    <rect x="5" y="0" width="20" height="25" fill="#bae6fd" opacity="0.8"/>
+    <!-- Thatched Pyramid Roof -->
+    <polygon points="-55,-10 0,-45 55,-10" fill="#d97706"/>
+    <!-- Private Wooden Sun Deck & Plunge Pool -->
+    <rect x="-45" y="20" width="90" height="12" fill="#92400e"/>
+    <rect x="15" y="22" width="25" height="8" rx="2" fill="#06b6d4"/>
+    <!-- Wooden Pier Connection to Central Jetty -->
+    <polygon points="40,25 150,25 150,32 40,32" fill="#b45309"/>
+  </g>
+
+  <!-- Overwater Bungalow 2 Right -->
+  <g transform="translate(560, 240)">
+    <line x1="-30" y1="20" x2="-30" y2="70" stroke="#451a03" stroke-width="4"/>
+    <line x1="30" y1="20" x2="30" y2="70" stroke="#451a03" stroke-width="4"/>
+    <line x1="0" y1="20" x2="0" y2="65" stroke="#451a03" stroke-width="4"/>
+    <rect x="-40" y="-10" width="80" height="35" rx="2" fill="#78350f"/>
+    <rect x="-25" y="0" width="20" height="25" fill="#bae6fd" opacity="0.8"/>
+    <rect x="5" y="0" width="20" height="25" fill="#bae6fd" opacity="0.8"/>
+    <polygon points="-55,-10 0,-45 55,-10" fill="#d97706"/>
+    <rect x="-45" y="20" width="90" height="12" fill="#92400e"/>
+    <rect x="-40" y="22" width="25" height="8" rx="2" fill="#06b6d4"/>
+    <polygon points="-40,25 -145,25 -145,32 -40,32" fill="#b45309"/>
+  </g>
+
+  <!-- Manta Ray Swimming Silhouette -->
+  <g transform="translate(300, 390) scale(0.6)" fill="#0f766e" opacity="0.6">
+    <path d="M0,0 Q-40,-20 -70,-5 Q-40,10 0,15 Q40,10 70,-5 Q40,-20 0,0 Z"/>
+    <line x1="0" y1="15" x2="0" y2="60" stroke="#0f766e" stroke-width="3"/>
+  </g>
+
+  <!-- Destination Label Overlay -->
+  <rect x="24" y="24" width="135" height="34" rx="8" fill="#0f172a" fill-opacity="0.6"/>
+  <text x="36" y="47" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#ffffff" letter-spacing="1">MALDIVES</text>
+  <text x="122" y="47" font-size="14">🐠</text>
+</svg>

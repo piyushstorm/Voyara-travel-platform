@@ -83,7 +83,7 @@ public class HolidayPackageSeeder {
                 "Dal Lake Shikara,Gulmarg Gondola Phase 2,Betaab Valley,Mughal Gardens",
                 "Srinagar airport transfers,Dal Lake luxury houseboat stay,Pahalgam & Gulmarg hotel stays,Breakfast & Dinner",
                 "Gondola Phase 2 ticket,Pony rides,Personal snow gear rentals",
-                "https://images.unsplash.com/photo-1597074866923-dc0589150a32?w=800",
+                "https://images.unsplash.com/photo-1598091383021-15ddea10925d?w=800",
                 "Day 1: Arrive Srinagar, transfer to intricately carved Dal Lake wooden houseboat. Evening romantic shikara sunset ride.\nDay 2: Day excursion to Gulmarg. Ride the world's highest cable car (Gondola) to Apharwat Peak, snow activities, pine forests.\nDay 3: Drive to Pahalgam (Valley of Shepherds) via saffron fields of Pampore and Awantipora ruins. Check-in to riverside resort.\nDay 4: Explore Aru Valley, Betaab Valley, and Chandanwari along the Lidder River.\nDay 5: Return to Srinagar. Visit famous Mughal Gardens: Nishat Bagh, Shalimar Bagh, and Shankaracharya Temple.\nDay 6: Morning floating vegetable market visit on Dal Lake, breakfast, and airport drop.",
                 true
             ),

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="andSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="60%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#bae6fd"/>
+    </linearGradient>
+    <linearGradient id="andLagoon" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="30%" stop-color="#06b6d4"/>
+      <stop offset="70%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#2dd4bf"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="800" height="450" fill="url(#andSky)"/>
+
+  <!-- Tropical Sun -->
+  <circle cx="620" cy="120" r="45" fill="#fef08a" opacity="0.9"/>
+  <circle cx="620" cy="120" r="75" fill="#fef08a" opacity="0.3"/>
+
+  <!-- Distant Island Silhouette -->
+  <path d="M120,220 Q240,180 380,210 Q450,195 540,220 L540,230 L120,230 Z" fill="#047857" opacity="0.7"/>
+
+  <!-- Turquoise Lagoon Ocean -->
+  <rect y="220" width="800" height="230" fill="url(#andLagoon)"/>
+
+  <!-- Coral Reef Formations Underwater -->
+  <g fill="#0e7490" opacity="0.35">
+    <ellipse cx="200" cy="270" rx="60" ry="12"/>
+    <ellipse cx="450" cy="260" rx="90" ry="16"/>
+    <ellipse cx="320" cy="290" rx="70" ry="14"/>
+  </g>
+
+  <!-- White Sand Beach in Foreground -->
+  <path d="M0,320 Q200,280 400,310 T800,290 L800,450 L0,450 Z" fill="#f8fafc"/>
+  <path d="M0,350 Q300,320 600,360 T800,340 L800,450 L0,450 Z" fill="#f1f5f9"/>
+
+  <!-- Tropical Island Palms -->
+  <g fill="#065f46">
+    <path d="M80,450 Q110,320 90,180 Q85,175 95,180 Q120,320 100,450 Z"/>
+    <path d="M90,180 Q40,150 10,175 Q50,145 90,180 Z"/>
+    <path d="M90,180 Q50,115 25,130 Q65,115 90,180 Z"/>
+    <path d="M90,180 Q90,90 105,100 Q95,120 90,180 Z"/>
+    <path d="M90,180 Q140,110 160,135 Q125,125 90,180 Z"/>
+    <path d="M90,180 Q155,155 170,190 Q130,165 90,180 Z"/>
+  </g>
+
+  <!-- Sea Turtle Swimming -->
+  <g transform="translate(480, 280) scale(0.7)" fill="#065f46" opacity="0.8">
+    <ellipse cx="0" cy="0" rx="20" ry="15"/>
+    <circle cx="24" cy="0" r="7"/>
+    <!-- Flippers -->
+    <path d="M12,-10 Q28,-30 35,-25 Q20,-15 10,-8 Z"/>
+    <path d="M12,10 Q28,30 35,25 Q20,15 10,8 Z"/>
+    <path d="M-12,-8 Q-22,-20 -26,-16 Q-18,-10 -12,-6 Z"/>
+    <path d="M-12,8 Q-22,20 -26,16 Q-18,10 -12,6 Z"/>
+  </g>
+
+  <!-- Destination Label Overlay -->
+  <rect x="24" y="24" width="135" height="34" rx="8" fill="#0f172a" fill-opacity="0.6"/>
+  <text x="36" y="47" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#ffffff" letter-spacing="1">ANDAMAN</text>
+  <text x="122" y="47" font-size="14">🏝️</text>
+</svg>

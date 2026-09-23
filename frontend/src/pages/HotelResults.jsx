@@ -340,7 +340,15 @@ function HotelResultsContent({ searchParams }) {
                         {/* Image */}
                         <div className="sm:w-52 h-44 sm:h-auto bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center shrink-0 relative overflow-hidden">
                           {hotel.imageUrl ? (
-                            <img src={hotel.imageUrl} alt={hotel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <img
+                              src={hotel.imageUrl}
+                              alt={hotel.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop&q=80';
+                              }}
+                            />
                           ) : (
                             <div className="flex flex-col items-center gap-1.5 text-slate-400">
                               <HotelIcon className="w-9 h-9 text-slate-300" />
