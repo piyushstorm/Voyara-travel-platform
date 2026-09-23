@@ -1,5 +1,5 @@
 -- Add email_verified boolean to users table, defaulting to true for existing users to avoid lockout
-ALTER TABLE users ADD COLUMN email_verified BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN NOT NULL DEFAULT true;
 
 -- Create email verification tokens table
 CREATE TABLE email_verification_tokens (
