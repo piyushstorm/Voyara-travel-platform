@@ -86,9 +86,9 @@ email:
   api-secret: ${EMAIL_API_SECRET:}
   base-url: ${EMAIL_BASE_URL:}
 
-# CORS — restrict to your production domain
+# CORS — restrict to your production domain and Vercel deployments
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://voyara.com}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://voyara.com,https://*.vercel.app}
 
 # Logging — production-safe levels
 logging:
