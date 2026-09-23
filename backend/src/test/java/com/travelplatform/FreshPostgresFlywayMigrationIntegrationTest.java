@@ -53,7 +53,7 @@ public class FreshPostgresFlywayMigrationIntegrationTest {
         MigrateResult result = flyway.migrate();
 
         assertTrue(result.success, "Flyway migrations must succeed on a fresh database");
-        assertEquals(13, result.migrationsExecuted, "All 13 migrations must be executed");
+        assertEquals(14, result.migrationsExecuted, "All 14 migrations must be executed");
 
         // Verify key tables exist
         try (Connection conn = DriverManager.getConnection(PG_URL, PG_USER, PG_PASS);
@@ -63,7 +63,7 @@ public class FreshPostgresFlywayMigrationIntegrationTest {
                     "payments", "refunds", "refresh_tokens", "notifications",
                     "guardian_alerts", "connection_risks", "price_history",
                     "price_freezes", "cancellation_policies", "room_holds",
-                    "review_reports", "destinations", "recommendations"
+                    "review_reports", "destinations", "recommendations", "trip_invitations"
             };
 
             for (String tbl : expectedTables) {
@@ -71,6 +71,12 @@ public class FreshPostgresFlywayMigrationIntegrationTest {
                         "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = '" + tbl + "');")) {
                     assertTrue(rs.next() && rs.getBoolean(1), "Table '" + tbl + "' must exist after migrations");
                 }
+            }
+
+            // Verify trip_invitations has sent_at column
+            try (ResultSet rs = stmt.executeQuery(
+                    "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'trip_invitations' AND column_name = 'sent_at');")) {
+                assertTrue(rs.next() && rs.getBoolean(1), "Column 'sent_at' must exist in 'trip_invitations'");
             }
         }
     }
@@ -92,6 +98,9 @@ public class FreshPostgresFlywayMigrationIntegrationTest {
                         "spring.datasource.url=" + PG_URL,
                         "spring.datasource.username=" + PG_USER,
                         "spring.datasource.password=" + PG_PASS,
+                        "spring.datasource.driver-class-name=org.postgresql.Driver",
+                        "spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect",
+                        "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect",
                         "spring.jpa.hibernate.ddl-auto=validate",
                         "spring.jpa.open-in-view=false",
                         "spring.flyway.enabled=true",

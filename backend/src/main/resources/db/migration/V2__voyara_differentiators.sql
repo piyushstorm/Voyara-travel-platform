@@ -125,6 +125,7 @@ CREATE TABLE IF NOT EXISTS trip_invitations (
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
     message TEXT,
     expires_at TIMESTAMP NOT NULL,
+    sent_at TIMESTAMP,
     accepted_at TIMESTAMP,
     declined_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
