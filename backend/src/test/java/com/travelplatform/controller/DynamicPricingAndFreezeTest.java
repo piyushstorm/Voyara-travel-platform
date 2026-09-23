@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -36,6 +37,8 @@ class DynamicPricingAndFreezeTest {
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private JwtTokenProvider tokenProvider;
     @Autowired private ObjectMapper objectMapper;
+    @Autowired private AirportRepository airportRepository;
+    @Autowired private AirlineRepository airlineRepository;
 
     private User testUser;
     private User otherUser;
@@ -55,7 +58,37 @@ class DynamicPricingAndFreezeTest {
         otherUser = userRepository.save(otherUser);
         otherToken = tokenProvider.generateAccessToken(otherUser.getEmail());
 
-        testFlight = flightRepository.findAll().get(0);
+        List<Flight> flights = flightRepository.findAll();
+        if (flights.isEmpty()) {
+            Airport origin = airportRepository.findByCode("DEL").orElseGet(() ->
+                    airportRepository.save(new Airport("DEL", "Indira Gandhi International", "Delhi", "India", 28.5562, 77.1000)));
+            Airport dest = airportRepository.findByCode("BOM").orElseGet(() ->
+                    airportRepository.save(new Airport("BOM", "Chhatrapati Shivaji International", "Mumbai", "India", 19.0896, 72.8656)));
+            Airline airline = airlineRepository.findByCode("AI").orElseGet(() ->
+                    airlineRepository.save(new Airline("AI", "Air India", "https://example.com/ai.png", 4.5)));
+
+            Flight f = new Flight();
+            f.setFlightNumber("AI-TEST-PRICE");
+            f.setAirline(airline);
+            f.setOrigin(origin);
+            f.setDestination(dest);
+            f.setOriginCode("DEL");
+            f.setDestinationCode("BOM");
+            f.setDepartureTime(LocalDateTime.now().plusDays(5));
+            f.setArrivalTime(LocalDateTime.now().plusDays(5).plusHours(2));
+            f.setDepartureDate(LocalDateTime.now().plusDays(5).toLocalDate());
+            f.setEconomyPrice(new BigDecimal("5000.00"));
+            f.setEconomyBasePrice(new BigDecimal("5000.00"));
+            f.setPremiumEconomyPrice(new BigDecimal("7500.00"));
+            f.setBusinessPrice(new BigDecimal("12000.00"));
+            f.setFirstClassPrice(new BigDecimal("20000.00"));
+            f.setTotalSeatsEconomy(100);
+            f.setDurationMinutes(120);
+            f.setActive(true);
+            testFlight = flightRepository.save(f);
+        } else {
+            testFlight = flights.get(0);
+        }
     }
 
     @Test
