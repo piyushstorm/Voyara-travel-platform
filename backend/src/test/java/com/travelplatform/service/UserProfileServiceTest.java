@@ -1,10 +1,12 @@
 package com.travelplatform.service;
 
 import com.travelplatform.dto.traveller.SavedTravellerRequest;
+import com.travelplatform.entity.AuthIdentity;
 import com.travelplatform.entity.Role;
 import com.travelplatform.entity.SavedTraveller;
 import com.travelplatform.entity.User;
 import com.travelplatform.exception.BadRequestException;
+import com.travelplatform.repository.AuthIdentityRepository;
 import com.travelplatform.repository.SavedTravellerRepository;
 import com.travelplatform.repository.UserRepository;
 import com.travelplatform.controller.UserProfileController;
@@ -19,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +34,7 @@ class UserProfileServiceTest {
     @Mock private UserRepository userRepository;
     @Mock private SavedTravellerRepository travellerRepository;
     @Mock private PasswordEncoder passwordEncoder;
+    @Mock private AuthIdentityRepository authIdentityRepository;
 
     @InjectMocks
     private UserProfileController controller;
@@ -49,10 +53,137 @@ class UserProfileServiceTest {
     @Test
     void getProfile_success() {
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+        when(authIdentityRepository.findByProviderAndUser(AuthIdentity.Provider.PHONE, testUser))
+                .thenReturn(Optional.empty());
 
         var response = controller.getProfile(auth);
         assertNotNull(response);
         assertEquals(200, response.getStatusCode().value());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getProfile_phoneAuthenticatedUser_returnsVerifiedPhone() {
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+        AuthIdentity phoneIdentity = new AuthIdentity(testUser, AuthIdentity.Provider.PHONE, "+919876543210");
+        phoneIdentity.setPhoneNumber("+919876543210");
+        phoneIdentity.setVerified(true);
+        when(authIdentityRepository.findByProviderAndUser(AuthIdentity.Provider.PHONE, testUser))
+                .thenReturn(Optional.of(phoneIdentity));
+
+        var response = controller.getProfile(auth);
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        Map<String, Object> body = response.getBody();
+        assertNotNull(body);
+        Map<String, Object> data = (Map<String, Object>) body.get("data");
+        assertEquals("+919876543210", data.get("phone"));
+        assertEquals("test@example.com", data.get("email"));
+        assertEquals("Test User", data.get("name"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getProfile_emailOnlyUser_phoneIsNull() {
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+        when(authIdentityRepository.findByProviderAndUser(AuthIdentity.Provider.PHONE, testUser))
+                .thenReturn(Optional.empty());
+
+        var response = controller.getProfile(auth);
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        Map<String, Object> body = response.getBody();
+        assertNotNull(body);
+        Map<String, Object> data = (Map<String, Object>) body.get("data");
+        assertNull(data.get("phone"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getProfile_googleOnlyUser_phoneIsNull() {
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+        when(authIdentityRepository.findByProviderAndUser(AuthIdentity.Provider.PHONE, testUser))
+                .thenReturn(Optional.empty());
+
+        var response = controller.getProfile(auth);
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        Map<String, Object> body = response.getBody();
+        assertNotNull(body);
+        Map<String, Object> data = (Map<String, Object>) body.get("data");
+        assertNull(data.get("phone"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getProfile_userWithLinkedPhone_returnsLinkedPhone() {
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+        AuthIdentity linkedPhoneIdentity = new AuthIdentity(testUser, AuthIdentity.Provider.PHONE, "+919812345678");
+        linkedPhoneIdentity.setPhoneNumber("+919812345678");
+        linkedPhoneIdentity.setVerified(true);
+        when(authIdentityRepository.findByProviderAndUser(AuthIdentity.Provider.PHONE, testUser))
+                .thenReturn(Optional.of(linkedPhoneIdentity));
+
+        var response = controller.getProfile(auth);
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        Map<String, Object> body = response.getBody();
+        assertNotNull(body);
+        Map<String, Object> data = (Map<String, Object>) body.get("data");
+        assertEquals("+919812345678", data.get("phone"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getProfile_scopedToAuthenticatedUser_doesNotReturnOtherUsersPhone() {
+        User otherUser = new User("Other User", "other@example.com", "encodedPassword");
+        otherUser.setId(2L);
+        AuthIdentity otherUserPhone = new AuthIdentity(otherUser, AuthIdentity.Provider.PHONE, "+919999999999");
+        otherUserPhone.setPhoneNumber("+919999999999");
+        otherUserPhone.setVerified(true);
+
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+        when(authIdentityRepository.findByProviderAndUser(AuthIdentity.Provider.PHONE, testUser))
+                .thenReturn(Optional.empty());
+
+        var response = controller.getProfile(auth);
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        Map<String, Object> body = response.getBody();
+        assertNotNull(body);
+        Map<String, Object> data = (Map<String, Object>) body.get("data");
+        assertNull(data.get("phone"));
+        verify(authIdentityRepository, never()).findByProviderAndUser(AuthIdentity.Provider.PHONE, otherUser);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getProfile_unverifiedPhoneIdentity_returnsNull() {
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+        AuthIdentity unverifiedPhone = new AuthIdentity(testUser, AuthIdentity.Provider.PHONE, "+919876543210");
+        unverifiedPhone.setPhoneNumber("+919876543210");
+        unverifiedPhone.setVerified(false);
+        when(authIdentityRepository.findByProviderAndUser(AuthIdentity.Provider.PHONE, testUser))
+                .thenReturn(Optional.of(unverifiedPhone));
+
+        var response = controller.getProfile(auth);
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        Map<String, Object> body = response.getBody();
+        assertNotNull(body);
+        Map<String, Object> data = (Map<String, Object>) body.get("data");
+        assertNull(data.get("phone"));
+    }
+
+    @Test
+    void updateProfile_attemptPhoneUpdate_throwsBadRequest() {
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+
+        var updates = new java.util.HashMap<String, String>();
+        updates.put("phone", "+919999999999");
+
+        assertThrows(BadRequestException.class, () -> controller.updateProfile(auth, updates));
+        verify(userRepository, never()).save(any());
     }
 
     @Test

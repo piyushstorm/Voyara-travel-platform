@@ -366,9 +366,14 @@ export default function Profile() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                <input type="tel" value={phoneValue} onChange={e => setPhoneValue(e.target.value)} placeholder="+91 98765 43210"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none" />
-                <p className="text-xs text-gray-400 mt-1">Phone storage requires backend support</p>
+                <input type="tel" value={profile?.phone || ''} disabled readOnly placeholder="Not provided"
+                  className="w-full px-4 py-3 border border-gray-200 bg-gray-50 text-gray-500 rounded-xl text-sm cursor-not-allowed outline-none" />
+                <p className="text-xs text-gray-400 mt-1">
+                  To link or change your mobile number, verify it under the{' '}
+                  <button type="button" onClick={() => { setEditingProfile(false); setTab('security'); }} className="text-primary hover:underline font-medium">
+                    Security tab
+                  </button>.
+                </p>
               </div>
               <div className="flex gap-3">
                 <button onClick={handleProfileSave} disabled={profileSaving}

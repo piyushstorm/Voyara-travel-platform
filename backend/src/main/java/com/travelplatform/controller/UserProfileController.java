@@ -2,10 +2,12 @@ package com.travelplatform.controller;
 
 import com.travelplatform.dto.ApiResponse;
 import com.travelplatform.dto.traveller.SavedTravellerRequest;
+import com.travelplatform.entity.AuthIdentity;
 import com.travelplatform.entity.SavedTraveller;
 import com.travelplatform.entity.User;
 import com.travelplatform.exception.BadRequestException;
 import com.travelplatform.exception.ResourceNotFoundException;
+import com.travelplatform.repository.AuthIdentityRepository;
 import com.travelplatform.repository.SavedTravellerRepository;
 import com.travelplatform.repository.UserRepository;
 import com.travelplatform.security.JwtTokenProvider;
@@ -28,13 +30,16 @@ public class UserProfileController {
     private final UserRepository userRepository;
     private final SavedTravellerRepository travellerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthIdentityRepository authIdentityRepository;
 
     public UserProfileController(UserRepository userRepository,
                                   SavedTravellerRepository travellerRepository,
-                                  PasswordEncoder passwordEncoder) {
+                                  PasswordEncoder passwordEncoder,
+                                  AuthIdentityRepository authIdentityRepository) {
         this.userRepository = userRepository;
         this.travellerRepository = travellerRepository;
         this.passwordEncoder = passwordEncoder;
+        this.authIdentityRepository = authIdentityRepository;
     }
 
     // ---- Profile ----
@@ -43,10 +48,18 @@ public class UserProfileController {
     public ResponseEntity<Map<String, Object>> getProfile(Authentication authentication) {
         User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", authentication.getName()));
+
+        String phone = authIdentityRepository.findByProviderAndUser(AuthIdentity.Provider.PHONE, user)
+                .filter(AuthIdentity::isVerified)
+                .map(AuthIdentity::getPhoneNumber)
+                .filter(p -> p != null && !p.isBlank())
+                .orElse(null);
+
         Map<String, Object> profile = new HashMap<>();
         profile.put("id", user.getId());
         profile.put("name", user.getName());
         profile.put("email", user.getEmail());
+        profile.put("phone", phone);
         profile.put("role", user.getRole());
         profile.put("enabled", user.isEnabled());
         profile.put("createdAt", user.getCreatedAt());
@@ -59,6 +72,10 @@ public class UserProfileController {
                                                              @RequestBody Map<String, String> updates) {
         User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", authentication.getName()));
+
+        if (updates.containsKey("phone")) {
+            throw new BadRequestException("Phone number cannot be updated directly. Please use phone verification in Security settings.");
+        }
 
         if (updates.containsKey("name")) {
             String name = updates.get("name");
