@@ -1,15 +1,22 @@
 import axios from 'axios'
 
+const rawBase = import.meta.env.VITE_API_BASE_URL || ''
+const API_BASE_URL = rawBase.replace(/\/+$/, '')
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: `${API_BASE_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
   },
 })
 
-// Request interceptor: attach access token
+// Request interceptor: normalize URL and attach access token
 api.interceptors.request.use(
   (config) => {
+    // Strip redundant leading /api if passed in request URL to prevent /api/api/...
+    if (config.url && config.url.startsWith('/api/')) {
+      config.url = config.url.substring(4)
+    }
     const token = localStorage.getItem('accessToken')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
@@ -32,7 +39,7 @@ api.interceptors.response.use(
 
       if (refreshToken) {
         try {
-          const response = await axios.post('/api/auth/refresh', { refreshToken })
+          const response = await axios.post(`${API_BASE_URL}/api/auth/refresh`, { refreshToken })
           const { accessToken, refreshToken: newRefreshToken, role, name, email } = response.data.data
           localStorage.setItem('accessToken', accessToken)
           localStorage.setItem('refreshToken', newRefreshToken)

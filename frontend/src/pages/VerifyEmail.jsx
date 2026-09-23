@@ -22,7 +22,7 @@ export default function VerifyEmail() {
 
     const verifyToken = async () => {
       try {
-        await api.post(`/api/auth/verify-email?token=${token}`)
+        await api.post(`/auth/verify-email?token=${token}`)
         setStatus('SUCCESS')
       } catch (err) {
         setStatus('ERROR')

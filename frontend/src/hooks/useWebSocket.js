@@ -2,9 +2,32 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { Client } from '@stomp/stompjs';
 
 /**
+ * Resolves the WebSocket broker URL:
+ * - If VITE_API_BASE_URL is defined (production on Vercel connecting to Railway):
+ *   Converts https:// -> wss:// and http:// -> ws://, then appends /ws.
+ * - Otherwise (local development):
+ *   Falls back to window.location via Vite /ws proxy.
+ */
+function getBrokerUrl() {
+  const apiBase = import.meta.env.VITE_API_BASE_URL;
+  if (apiBase) {
+    const cleanUrl = apiBase.replace(/\/+$/, '');
+    if (cleanUrl.startsWith('https://')) {
+      return cleanUrl.replace(/^https:\/\//, 'wss://') + '/ws';
+    }
+    if (cleanUrl.startsWith('http://')) {
+      return cleanUrl.replace(/^http:\/\//, 'ws://') + '/ws';
+    }
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${protocol}//${cleanUrl.replace(/^\/+/, '')}/ws`;
+  }
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return `${protocol}//${window.location.host}/ws`;
+}
+
+/**
  * Custom hook for WebSocket/STOMP connection.
  * Subscribes to flight status and price update topics.
- * Uses /ws endpoint proxied to backend via vite config.
  */
 export function useWebSocket() {
   const clientRef = useRef(null);
@@ -12,9 +35,9 @@ export function useWebSocket() {
   const subscriptionsRef = useRef(new Map());
 
   useEffect(() => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const brokerURL = getBrokerUrl();
     const client = new Client({
-      brokerURL: `${protocol}//${window.location.host}/ws`,
+      brokerURL,
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,

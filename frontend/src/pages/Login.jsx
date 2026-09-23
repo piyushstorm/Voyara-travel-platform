@@ -177,7 +177,7 @@ export default function Login() {
     setResending(true);
     setResendMsg('');
     try {
-      await api.post('/api/auth/resend-verification', { email });
+      await api.post('/auth/resend-verification', { email });
       setResendMsg('Verification email resent.');
     } catch {
       setResendMsg('Failed to resend.');
